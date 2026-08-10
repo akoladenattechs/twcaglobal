@@ -68,11 +68,20 @@ try {
     }
     echo "✅ Dropped " . count($tables) . " existing tables.\n";
 
-    // Step 2: Run migrate:fresh --seed (all tables gone, no conflicts)
-    $status = $kernel->call('migrate:fresh', ['--seed' => true, '--force' => true]);
+    // Step 2: Disable FK checks on Laravel's OWN DB connection (what the migrator uses)
+    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0');
+    echo "✅ FK checks disabled on Laravel DB connection.\n";
+
+    // Step 3: Run migrate (not migrate:fresh — tables already dropped above)
+    $status = $kernel->call('migrate', ['--force' => true]);
     echo $kernel->output();
 
-    $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
+    // Step 4: Run seeders
+    echo "=== RUNNING SEEDERS ===\n";
+    $kernel->call('db:seed', ['--force' => true]);
+    echo $kernel->output();
+
+    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1');
     echo "✅ Foreign key checks re-enabled.\n\n";
 
     // Ensure storage/installed flag exists
