@@ -1,0 +1,1119 @@
+/* Custom styles for Admin Dashboard - Cleaned Version */
+
+/* Sidebar navigation */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100; /* Ensure sidebar is above content */
+    width: 250px; /* Adjust sidebar width as needed */
+    overflow-y: auto; /* Enable scrolling for long menus */
+    background-color: #343a40;
+    color: #fff;
+    padding-top: 1rem;
+    transition: transform 0.3s ease-in-out; /* Smooth transition for collapsing */
+}
+
+.sidebar-logo {
+    max-width: 150px;
+}
+
+/* Offset main content area to make space for the sidebar */
+main[role="main"],
+.content-wrapper {
+    margin-left: 0; /* Default for mobile */
+    padding: 20px; /* Internal padding for content */
+    width: 100%; /* Default for mobile */
+}
+
+@media (min-width: 768px) {
+    main[role="main"],
+    .content-wrapper {
+        margin-left: 250px; /* Offset by sidebar width */
+        width: calc(100% - 250px); /* Take remaining width */
+        padding: 1.5rem; /* Increased padding for better spacing */
+    }
+
+    /* Add this to ensure proper column spacing */
+    main[role="main"] .container-fluid .row > [class*="col-"],
+    .content-wrapper .container-fluid .row > [class*="col-"] {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+/* Mobile sidebar toggle */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1050; /* Ensure toggle is above sidebar */
+    background: #343a40;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar-toggle {
+        display: block;
+    }
+    
+    /* Hide sidebar by default on small screens */
+    .sidebar {
+        transform: translateX(-250px); /* Adjust value to match sidebar width */
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    /* Add overlay when sidebar is active on mobile */
+    body.sidebar-active::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 99; /* Below sidebar, above content */
+    }
+}
+
+/* Ensure no extra margins/paddings from Bootstrap grid within the layout row */
+.container-fluid > .row.no-gutters > [class*="col-"] {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Additional styles for dashboard elements */
+.nav-header {
+    color: #6c757d;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 1rem 1rem 0.5rem;
+    font-size: 0.75rem;
+    margin-top: 1rem;
+}
+
+.nav-item {
+    padding-left: 0.5rem;
+}
+
+.nav-link {
+    color: #fff;
+    padding: 0.5rem 1rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 0.25rem;
+}
+
+.nav-link.active {
+    background-color: var(--primary-color-light-50);
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Hide scrollbars while maintaining scroll functionality */
+.sidebar::-webkit-scrollbar,
+.table-responsive::-webkit-scrollbar,
+[class*="overflow"]::-webkit-scrollbar,
+.main-content::-webkit-scrollbar,
+body::-webkit-scrollbar, 
+html::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar,
+.table-responsive,
+[class*="overflow"],
+.main-content,
+body, 
+html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+body, html {
+    overflow-x: hidden; /* Prevent horizontal scroll on the page */
+}
+
+/* Form adjustments for mobile */
+@media (max-width: 575.98px) {
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        font-size: 16px; /* Prevents iOS zoom on focus */
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* --- Standardized Card Styles --- */
+.card {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-footer {
+    padding: 0.75rem 1.25rem;
+    background-color: #f8f9fc;
+    border-top: 1px solid #e3e6f0;
+}
+
+/* --- Dashboard Card Styles --- */
+.dashboard-card {
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 0.5rem;
+    min-height: 120px;
+}
+
+.dashboard-card .card-body {
+    padding: 0.75rem 1rem !important;
+}
+
+.dashboard-card .card-body h1 {
+    font-size: 2rem !important;
+    margin-bottom: 0.25rem;
+}
+
+.dashboard-card .card-body h6 {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.25rem;
+}
+
+.dashboard-card .fa-3x {
+    font-size: 2rem !important;
+}
+
+@media (max-width: 991.98px) {
+    .dashboard-card .card-body h1 {
+        font-size: 1.3rem !important;
+    }
+    .dashboard-card .fa-3x {
+        font-size: 1.3rem !important;
+    }
+    .dashboard-card {
+        min-height: 90px;
+    }
+}
+
+#attendanceTrendChart, #attendanceChart, #offeringsChart {
+    height: 350px !important;
+    width: 100% !important;
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+/* --- Settings Tabs Visibility Fix --- */
+.nav-tabs .nav-link {
+    border: 1px solid #dee2e6;
+    background: #f8f9fa;
+    color: #333;
+    margin-right: 2px;
+    border-radius: 0.25rem 0.25rem 0 0;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-tabs .nav-link.active {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color) var(--primary-color) #fff;
+    font-weight: bold;
+}
+
+/* Ensure settings page content is not under the sidebar */
+/* Content area adjustments */
+.content {
+    margin-left: 250px; /* Match sidebar width */
+    padding: 20px;
+    width: calc(100% - 250px);
+    transition: margin-left 0.3s ease-in-out;
+}
+
+@media (max-width: 767.98px) {
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Ensure proper spacing and layout for settings pages */
+.container-fluid.px-4 {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+.container-fluid.px-4 .row > [class*="col-"] {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+/* Standardized Page Layout */
+.container-fluid {
+    padding: 1.5rem;
+}
+
+/* Consistent Page Headers */
+.page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+/* Consistent Table Styling */
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: #5a5c69;
+    letter-spacing: 0.05em;
+}
+
+/* Alert Consistency */
+.alert {
+    border: none;
+    border-radius: 0.35rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Form Consistency */
+.form-group label {
+    font-weight: 600;
+    color: #5a5c69;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 1px solid #d1d3e2;
+    border-radius: 0.35rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color-light-50);
+    box-shadow: 0 0 0 0.2rem var(--primary-color-light-50);
+}
+
+/* Modal Consistency */
+.modal-content {
+    border: none;
+    border-radius: 0.35rem;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+}
+
+.modal-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.modal-footer {
+    background-color: #f8f9fc;
+    border-top: 1px solid #e3e6f0;
+}
+
+/* Admin Login Page Styles */
+body.login-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+.login-page .login-container {
+    max-width: 440px;
+    margin: auto;
+    padding: 20px;
+}
+.login-page .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    overflow: hidden;
+}
+.login-page .card-header {
+    background: #343a40;
+    border-bottom: none;
+    padding: 30px 20px;
+    text-align: center;
+}
+.login-page .card-header h4 {
+    color: #fff;
+}
+.login-page .logo {
+    max-width: 150px;
+    margin-bottom: 20px;
+}
+.login-page .card-body {
+    padding: 30px;
+    background: #fff;
+}
+.login-page .form-group {
+    margin-bottom: 25px;
+    position: relative;
+}
+.login-page .form-control {
+    border-radius: 8px;
+    padding: 12px 16px;
+    height: auto;
+    border: 2px solid #e1e1e1;
+    transition: all 0.3s ease;
+}
+.login-page .form-control:focus {
+    border-color: #764ba2;
+    box-shadow: 0 0 0 0.2rem rgba(118,75,162,0.25);
+}
+.login-page .input-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #764ba2;
+}
+.login-page .btn-login {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+.login-page .btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(118,75,162,0.4);
+}
+.login-page .alert {
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* ── Login page "Remember me" checkbox ──
+   Self-contained box + checkmark so the visual state renders
+   reliably (does not depend on CDN custom-form CSS quirks). */
+.login-page .custom-control {
+    padding-left: 1.75rem;
+}
+.login-page .custom-control-label {
+    padding-top: 1px;
+}
+.login-page .custom-control-label::before {
+    position: absolute;
+    top: 0.2rem;
+    left: -1.75rem;
+    display: block;
+    width: 1.1rem;
+    height: 1.1rem;
+    content: "";
+    pointer-events: none;
+    background-color: #fff;
+    border: 1px solid #adb5bd;
+    border-radius: 0.25rem;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.login-page .custom-control-label::after {
+    position: absolute;
+    top: 0.2rem;
+    left: -1.75rem;
+    display: block;
+    width: 1.1rem;
+    height: 1.1rem;
+    content: "";
+    background: no-repeat 50% / 50% 50%;
+}
+.login-page .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: var(--primary-color, #764ba2);
+    border-color: var(--primary-color, #764ba2);
+}
+.login-page .custom-control-input:checked ~ .custom-control-label::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26l2.974 2.99L8 2.193z'/%3e%3c/svg%3e");
+}
+.login-page .custom-control-input:focus ~ .custom-control-label::before {
+    box-shadow: 0 0 0 0.2rem rgba(118, 75, 162, 0.25);
+}
+
+/* Image styles */
+.img-cover {
+    object-fit: cover;
+}
+
+.img-preview {
+    max-width: 200px;
+    max-height: 200px;
+}
+
+/* Media preview styles */
+.media-preview {
+    width: 60px;
+    height: 60px;
+}
+
+.media-preview-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+/* ════════════════════════════════════════════
+   Theme Color Overrides (uses CSS variables
+   set in layouts/admin.blade.php :root block)
+   ════════════════════════════════════════════ */
+
+/* ── Bootstrap core overrides ── */
+.btn-primary, .bg-primary, .badge-primary, .nav-pills .nav-link.active {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+.btn-outline-primary {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+.btn-primary:not(:disabled):not(.disabled):active,
+.btn-primary:not(:disabled):not(.disabled).active {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+a { color: var(--primary-color); }
+a:hover, a:focus { color: var(--primary-color) !important; }
+
+/* ── Card footer links: keep white on hover ── */
+/* Card footer inherits card background for colored stat cards */
+.card.bg-primary .card-footer,
+.card.bg-success .card-footer,
+.card.bg-warning .card-footer,
+.card.bg-danger .card-footer,
+.card.bg-info .card-footer,
+.card.bg-secondary .card-footer,
+.card.bg-dark .card-footer {
+    background-color: inherit;
+    border-top-color: rgba(255,255,255,0.2);
+}
+
+.card-footer a:hover,
+.card-footer a:focus {
+    color: #fff !important;
+}
+
+.text-primary { color: var(--primary-color) !important; }
+
+/* ── Sidebar navigation active state ── */
+.nav-item .nav-link.active {
+    border-left: 3px solid var(--primary-color) !important;
+}
+
+/* ── Settings tabs ── */
+.nav-tabs .nav-link:hover:not(.active) {
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+.nav-tabs .nav-link.active:focus {
+    color: #fff !important;
+}
+
+/* ── Checkboxes / radios ── */
+.custom-control-input:checked ~ .custom-control-label::before {
+    border-color: var(--primary-color) !important;
+    background-color: var(--primary-color) !important;
+}
+
+/* ── Pagination ── */
+.page-item.active .page-link {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+.page-item:not(.active):not(.disabled) .page-link:hover {
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+
+/* ── Dropdown items ── */
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--primary-color-light) !important;
+    color: var(--primary-color) !important;
+}
+
+/* ── Select2 ── */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--primary-color) !important;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--primary-color-light-50) !important;
+    border-color: var(--primary-color-light-50) !important;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--primary-color-light-50) !important;
+}
+
+/* ── DataTables ── */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #fff !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: var(--primary-color-light) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+
+/* ── Summernote ── */
+.note-editor .note-toolbar .note-btn.active,
+.note-editor .note-statusbar .note-resizebar {
+    background-color: var(--primary-color-light) !important;
+}
+
+/* ── Secondary color ── */
+.btn-secondary, .bg-secondary, .badge-secondary {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+}
+
+
+/* ============================================================
+   Button System (merged from admin-buttons.css)
+   ============================================================ */
+
+/* Primary Action Buttons */
+.btn-add-new {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+}
+
+.btn-add-new:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    opacity: 0.85;
+    color: white;
+}
+
+/* Secondary Action Buttons */
+.btn-secondary-action {
+    background: #6c757d;
+    border-color: #6c757d;
+    color: white;
+    margin-left: 0.5rem;
+}
+
+/* Action Button Groups */
+.action-buttons {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+/* Icon-only buttons for table actions — unified with Bootstrap btn-primary/btn-danger */
+
+/* Button spacing in toolbars */
+.btn-toolbar .btn {
+    margin-left: 0.5rem;
+}
+
+.btn-toolbar .btn:first-child {
+    margin-left: 0;
+}
+.text-secondary { color: var(--secondary-color) !important; }
+
+/* ═════════════════════════════════════════════════════════
+   Financials Module Styles
+   ═════════════════════════════════════════════════════════ */
+
+/* --- KPI Cards --- */
+.kpi-card {
+    border-radius: 0.75rem;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 2rem rgba(0,0,0,0.12) !important;
+}
+.kpi-card .card-body {
+    padding: 1.25rem 1.5rem;
+}
+.kpi-card .kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+.kpi-card .kpi-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #858796;
+}
+.kpi-card .kpi-value {
+    font-size: 1.65rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0.15rem 0 0.25rem;
+}
+.kpi-card .kpi-trend {
+    font-size: 0.8rem;
+    color: #858796;
+}
+.kpi-positive { color: var(--primary-color); }
+.kpi-negative { color: var(--secondary-color); }
+
+/* KPI icon background colours */
+.kpi-icon.bg-inflow { background: var(--primary-color) !important; }
+.kpi-icon.bg-outflow { background: var(--secondary-color) !important; }
+
+/* --- Tab Content --- */
+
+/* --- Tab Content --- */
+.tab-pane {
+    padding-top: 0.5rem;
+}
+
+/* --- Overview Charts --- */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+.chart-container-sm {
+    height: 250px;
+}
+
+/* --- Quick-entry FAB --- */
+.quick-entry-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1030;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.quick-entry-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    color: #fff;
+}
+
+/* --- Pledge Progress --- */
+.pledge-progress {
+    height: 8px;
+    border-radius: 4px;
+}
+.pledge-progress .progress-bar {
+    border-radius: 4px;
+}
+.pledge-progress-wrap {
+    width: 80px;
+}
+
+/* --- Campaign Cards --- */
+.campaign-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+.campaign-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.1);
+}
+.campaign-card .campaign-header {
+    padding: 1rem 1.25rem;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+.campaign-card .campaign-body {
+    padding: 1.25rem;
+}
+
+/* --- Account Cards --- */
+.account-card {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.account-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.1);
+}
+
+/* --- Forgot Password (OTP Reset) Pages --- */
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+.step-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ddd;
+}
+.step-dot.active {
+    background: #c0392b;
+}
+.step-dot.done {
+    background: #27ae60;
+}
+.password-strength {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 6px;
+    transition: all 0.3s;
+}
+.honeypot-field {
+    position: absolute;
+    left: -99999px;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* Forgot-password text utilities */
+.forgot-subtitle {
+    font-size: 14px;
+}
+.forgot-small {
+    font-size: 13px;
+}
+
+/* ════════════════════════════════════════════
+   Newsletter Module Styles
+   ════════════════════════════════════════════ */
+.newsletter-content-preview {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    padding: 1.5rem;
+    background: #fff;
+}
+.newsletter-content-preview iframe {
+    max-width: 100%;
+}
+.newsletter-content-preview img {
+    max-width: 100%;
+    height: auto;
+}
+/* Fix Summernote modal dialogs inside Bootstrap modal */
+.note-modal-backdrop {
+    z-index: 1055 !important;
+}
+.note-modal {
+    z-index: 1060 !important;
+}
+.note-modal .modal-dialog {
+    margin-top: 8%;
+}
+
+/* ════════════════════════════════════════════
+   Hero Section Styles
+   ════════════════════════════════════════════ */
+.gap-2 { gap: 0.5rem; }
+
+/* ════════════════════════════════════════════
+   Profile / Avatar Styles
+   ════════════════════════════════════════════ */
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--primary-color-light);
+}
+.avatar-initials {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+/* ════════════════════════════════════════════
+   Member View Label Column
+   ════════════════════════════════════════════ */
+.label-col {
+    width: 140px;
+}
+
+/* ════════════════════════════════════════════
+   Roles & Permissions Table Header Widths
+   ════════════════════════════════════════════ */
+th.col-permission { width: 35%; }
+th.col-slug { width: 30%; }
+th.col-roles { width: 35%; }
+
+/* ════════════════════════════════════════════
+   Utility: Small Font
+   ════════════════════════════════════════════ */
+.text-size-sm { font-size: 14px; }
+
+/* ════════════════════════════════════════════
+   Thumbnail Max-Height
+   ════════════════════════════════════════════ */
+.img-thumbnail-md { max-height: 120px; }.img-thumbnail-sm { max-height: 100px; }
+/* ════════════════════════════════════════════
+   Scripture Text Display
+   ════════════════════════════════════════════ */
+.scripture-text-display {
+    font-family: Georgia, serif;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    color: #333;
+}
+
+/* ════════════════════════════════════════════
+   Message Body Preserve Whitespace
+   ════════════════════════════════════════════ */
+.message-body-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ════════════════════════════════════════════
+   Icon Large Utility
+   ════════════════════════════════════════════ */
+.icon-lg { font-size: 1.5rem; }
+.otp-input {
+    font-size: 24px;
+    letter-spacing: 8px;
+    font-weight: 600;
+}
+.account-card .account-type-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+}
+.account-balance {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+/* --- Amount Styling --- */
+.amount-inflow { color: var(--primary-color); font-weight: 600; }
+.amount-outflow { color: var(--secondary-color); font-weight: 600; }
+
+/* --- Keyboard Hint --- */
+.kbd-hint {
+    display: inline-block;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #6c757d;
+    background: #f8f9fc;
+    border: 1px solid #d1d3e2;
+    border-radius: 0.2rem;
+    font-family: monospace;
+}
+
+/* --- Approval Queue --- */
+.approval-item {
+    border-left: 3px solid #ffc107;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: #fffcf0;
+    border-radius: 0 0.35rem 0.35rem 0;
+}
+.approval-item.approved {
+    border-left-color: #1cc88a;
+    background: #f0fff8;
+}
+.approval-item.rejected {
+    border-left-color: #e74a3b;
+    background: #fff0f0;
+}
+
+/* --- Fund Progress (sidebar style) --- */
+.fund-progress-xs {
+    height: 6px;
+    border-radius: 3px;
+}
+
+/* --- Scrollable Table Containers --- */
+.table-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* --- Amount Display in Tables --- */
+.text-money {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 767.98px) {
+    .kpi-card .kpi-value {
+        font-size: 1.25rem;
+    }
+    .quick-entry-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+        bottom: 1.25rem;
+        right: 1.25rem;
+    }
+}
+/* Dashboard stat card icon opacity */
+.opacity-50 { opacity: 0.5; }
+
+/* --- Section Sub-headings (Settings) --- */
+.section-label {
+    font-size: 0.9rem;
+}
+
+/* --- Bordered Image Preview (Settings) --- */
+.img-preview-bordered {
+    border: 1px solid #ddd;
+    padding: 4px;
+    border-radius: 4px;
+}
+.settings-logo-preview {
+    max-height: 60px;
+}
+.settings-favicon-preview {
+    max-height: 32px;
+}
+.devotional-logo-preview {
+    max-height: 70px;
+}
+
+/* ════════════════════════════════════════════
+   Audit Logs Page
+   ════════════════════════════════════════════ */
+
+/* Action badges */
+.audit-badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.35rem;
+    color: #fff;
+}
+.audit-badge-success {
+    background-color: #27ae60;
+}
+.audit-badge-danger {
+    background-color: #e74c3c;
+}
+.audit-badge-warning {
+    background-color: #f39c12;
+}
+.audit-badge-info {
+    background-color: #2980b9;
+}
+.audit-badge-muted {
+    background-color: #6c757d;
+}
+
+/* User column */
+.audit-user-cell {
+    white-space: nowrap;
+}
+.audit-user {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+.audit-guest {
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Description column — keep readable, allow wrap */
+.audit-description {
+    min-width: 220px;
+    max-width: 380px;
+}
+
+/* User agent column — truncate long strings */
+.audit-ua {
+    max-width: 240px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #6c757d;
+    font-size: 0.85rem;
+    cursor: help;
+}
+
+/* Filter panel */
+#auditLogsTable_filter {
+    margin-bottom: 0.75rem;
+}
+.audit-filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+

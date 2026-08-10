@@ -1,0 +1,11 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/twmaorgn/public_html/twcaglobal.org
+    - /usr/local/bin/php /home/twmaorgn/public_html/twcaglobal.org/artisan down --retry=10
+    - /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction --working-dir=/home/twmaorgn/public_html/twcaglobal.org
+    - /usr/local/bin/php /home/twmaorgn/public_html/twcaglobal.org/artisan config:cache
+    - /usr/local/bin/php /home/twmaorgn/public_html/twcaglobal.org/artisan route:cache
+    - /usr/local/bin/php /home/twmaorgn/public_html/twcaglobal.org/artisan view:cache
+    - /usr/local/bin/php /home/twmaorgn/public_html/twcaglobal.org/artisan migrate --force
+    - /usr/local/bin/php /home/twmaorgn/public_html/twcaglobal.org/artisan up

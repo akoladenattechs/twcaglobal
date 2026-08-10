@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "name": "welcome_email",
+        "subject": "Welcome to {church_name}",
+        "body": "Dear {name},\n\nWelcome to {church_name}...",
+        "variables": "[\"name\", \"church_name\"]",
+        "created_at": "2025-05-29 12:57:55",
+        "updated_at": "2025-05-29 12:57:55"
+    },
+    {
+        "id": 2,
+        "name": "password_reset",
+        "subject": "Password Reset Request",
+        "body": "Dear {name},\n\nYou have requested to reset your password...",
+        "variables": "[\"name\", \"reset_link\"]",
+        "created_at": "2025-05-29 12:57:55",
+        "updated_at": "2025-05-29 12:57:55"
+    },
+    {
+        "id": 3,
+        "name": "contact_confirmation",
+        "subject": "Thank you for contacting us",
+        "body": "Dear {name},\n\nThank you for contacting {church_name}...",
+        "variables": "[\"name\", \"church_name\"]",
+        "created_at": "2025-05-29 12:57:55",
+        "updated_at": "2025-05-29 12:57:55"
+    }
+]

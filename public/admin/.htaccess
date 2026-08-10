@@ -1,0 +1,7 @@
+<IfModule mod_dir.c>
+    # Disable automatic trailing-slash redirect for this directory.
+    # /admin is a Laravel route, not a static directory — but public/admin/
+    # physically exists (for uploaded admin images). Without this, Apache
+    # would redirect /bli-laravel/admin → /bli-laravel/public/admin/.
+    DirectorySlash Off
+</IfModule>

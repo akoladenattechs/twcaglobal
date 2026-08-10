@@ -1,0 +1,101 @@
+[
+    {
+        "id": 1,
+        "title": "Welcome to Our New Website",
+        "content": "We are excited to announce the launch of our new church website. This platform will help us better connect with our community and share our message of faith and hope.",
+        "image_url": null,
+        "status": "published",
+        "created_at": "2025-05-29 12:57:55",
+        "updated_at": "2025-05-29 12:57:55",
+        "created_by": 1,
+        "display_order": 1
+    },
+    {
+        "id": 2,
+        "title": "Upcoming Community Outreach",
+        "content": "Join us this Saturday for our monthly community outreach program. We will be serving meals and providing support to those in need in our local community.",
+        "image_url": null,
+        "status": "published",
+        "created_at": "2025-05-29 12:57:55",
+        "updated_at": "2025-05-29 12:57:55",
+        "created_by": 1,
+        "display_order": 2
+    },
+    {
+        "id": 3,
+        "title": "Youth Ministry Summer Camp",
+        "content": "Registration is now open for our annual summer camp! This year's theme is \"Growing in Faith\" and will include exciting activities, worship sessions, and meaningful fellowship.",
+        "image_url": null,
+        "status": "published",
+        "created_at": "2025-05-29 12:57:55",
+        "updated_at": "2025-05-29 12:57:55",
+        "created_by": 1,
+        "display_order": 3
+    },
+    {
+        "id": 4,
+        "title": "Welcome to Our New Website",
+        "content": "We are excited to announce the launch of our new church website. This platform will help us better connect with our community and share our message of faith and hope.",
+        "image_url": null,
+        "status": "published",
+        "created_at": "2025-05-29 13:03:44",
+        "updated_at": "2025-05-29 13:03:44",
+        "created_by": 1,
+        "display_order": 1
+    },
+    {
+        "id": 5,
+        "title": "Upcoming Community Outreach",
+        "content": "Join us this Saturday for our monthly community outreach program. We will be serving meals and providing support to those in need in our local community.",
+        "image_url": null,
+        "status": "published",
+        "created_at": "2025-05-29 13:03:44",
+        "updated_at": "2025-05-29 13:03:44",
+        "created_by": 1,
+        "display_order": 2
+    },
+    {
+        "id": 6,
+        "title": "Youth Ministry Summer Camp",
+        "content": "Registration is now open for our annual summer camp! This year's theme is \"Growing in Faith\" and will include exciting activities, worship sessions, and meaningful fellowship.",
+        "image_url": null,
+        "status": "published",
+        "created_at": "2025-05-29 13:03:44",
+        "updated_at": "2025-05-29 13:03:44",
+        "created_by": 1,
+        "display_order": 3
+    },
+    {
+        "id": 7,
+        "title": "Welcome to Our New Website",
+        "content": "We are excited to announce the launch of our new church website. This platform will help us better connect with our community and share our message of faith and hope.",
+        "image_url": null,
+        "status": "published",
+        "created_at": "2025-06-03 04:31:30",
+        "updated_at": "2025-06-03 04:31:30",
+        "created_by": 1,
+        "display_order": 1
+    },
+    {
+        "id": 8,
+        "title": "Upcoming Community Outreach",
+        "content": "Join us this Saturday for our monthly community outreach program. We will be serving meals and providing support to those in need in our local community.",
+        "image_url": null,
+        "status": "published",
+        "created_at": "2025-06-03 04:31:30",
+        "updated_at": "2025-06-03 04:31:30",
+        "created_by": 1,
+        "display_order": 2
+    },
+    {
+        "id": 9,
+        "title": "Youth Ministry Summer Camp",
+        "content": "Registration is now open for our annual summer camp! This year's theme is \"Growing in Faith\" and will include exciting activities, worship sessions, and meaningful fellowship.",
+        "image_url": null,
+        "status": "published",
+        "created_at": "2025-06-03 04:31:30",
+        "updated_at": "2025-06-03 04:31:30",
+        "created_by": 1,
+        "display_order": 3
+    }
+]

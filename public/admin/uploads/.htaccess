@@ -1,0 +1,13 @@
+# Uploaded files are user-controlled content — they must NEVER be executable.
+# Block PHP and other server-side scripts, and disable directory listing.
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule \.(php|php3|php4|php5|php7|phtml|pht|phar|pl|py|cgi|asp|aspx|jsp|sh|inc)$ - [R=404,L]
+</IfModule>
+
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|pht|phar|pl|py|cgi|asp|aspx|jsp|sh|inc)$">
+    Require all denied
+</FilesMatch>

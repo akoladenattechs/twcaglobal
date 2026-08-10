@@ -1,0 +1,35 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Serve existing files from public/ directly (css, js, images, etc.).
+    # Two deployment layouts are supported WITHOUT hardcoding a folder name:
+    #   1) Project in a subdirectory of the docroot (e.g. local WAMP: /bli-laravel/...)
+    #   2) Project at the docroot root (e.g. production server: /...)
+    # The subdirectory is derived from the URL, so no folder name is hardcoded.
+
+    # Case 1: subdirectory layout — /<subdir>/<path> -> public/<path>
+    RewriteCond %{REQUEST_URI} !index\.php$
+    RewriteCond %{REQUEST_URI} ^/([^/]+)/(.+)$
+    RewriteCond %{CONTEXT_DOCUMENT_ROOT}/%1/public/%2 -f
+    RewriteRule ^(.+)$ public/$1 [L]
+
+    # Case 2: docroot-root layout — /<path> -> public/<path>
+    RewriteCond %{REQUEST_URI} !index\.php$
+    RewriteCond %{CONTEXT_DOCUMENT_ROOT}/public/$1 -f
+    RewriteRule ^(.+)$ public/$1 [L]
+
+    # Route /admin and /admin/* through Laravel (admin is a Laravel route,
+    # but public/admin/ physically exists for static assets).
+    RewriteRule ^admin$ index.php [L]
+    RewriteRule ^admin/(.+)$ index.php [L]
+
+    # Hard 404 for legacy debugging/utility scripts that must NEVER be
+    # web-reachable, even if they are re-added to the webroot later.
+    RewriteRule ^(phpinfo|diagnostic|generate-key|_schema-data|_extract-schema|_ide_helper(_models)?)\.php$ - [R=404,L]
+
+    # Catch-all: everything else hits the root front controller.
+    # Skip index.php here too — once the initial rewrite lands on index.php,
+    # Apache re-scans this .htaccess; the skip prevents a second rewrite.
+    RewriteCond %{REQUEST_URI} !index\.php$
+    RewriteRule ^(.*)$ index.php [L]
+</IfModule>
