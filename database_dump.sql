@@ -6,19 +6,19 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `about_us`;
 CREATE TABLE `about_us` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `subtitle` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `content` text COLLATE=utf8_unicode_ci,
-  `icon_class` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `section_type` varchar(191) COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'custom' COMMENT 'mission, vision, values, quote, custom',
-  `quote_author` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `image` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `title` varchar(191) NOT NULL,
+  `subtitle` varchar(191) DEFAULT NULL,
+  `content` text,
+  `icon_class` varchar(191) DEFAULT NULL,
+  `section_type` varchar(191) NOT NULL DEFAULT 'custom' COMMENT 'mission, vision, values, quote, custom',
+  `quote_author` varchar(191) DEFAULT NULL,
+  `image` varchar(191) DEFAULT NULL,
   `display_order` int NOT NULL DEFAULT '0',
-  `status` enum('published','draft') COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'draft',
+  `status` enum('published','draft') NOT NULL DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `activity_logs`;
 CREATE TABLE `activity_logs` (
@@ -31,7 +31,7 @@ CREATE TABLE `activity_logs` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `attendance`;
 CREATE TABLE `attendance` (
@@ -49,7 +49,7 @@ CREATE TABLE `attendance` (
   PRIMARY KEY (`id`),
   KEY `recorded_by` (`recorded_by`),
   KEY `attendance_center_id_foreign` (`center_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `books`;
 CREATE TABLE `books` (
@@ -70,42 +70,42 @@ CREATE TABLE `books` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `books_slug_unique` (`slug`),
   KEY `image_id` (`image_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `cache`;
 CREATE TABLE `cache` (
-  `key` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `value` mediumtext COLLATE=utf8_unicode_ci NOT NULL,
+  `key` varchar(191) NOT NULL,
+  `value` mediumtext NOT NULL,
   `expiration` bigint NOT NULL,
   PRIMARY KEY (`key`),
   KEY `cache_expiration_index` (`expiration`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
-  `key` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `owner` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
+  `key` varchar(191) NOT NULL,
+  `owner` varchar(191) NOT NULL,
   `expiration` bigint NOT NULL,
   PRIMARY KEY (`key`),
   KEY `cache_locks_expiration_index` (`expiration`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `center_locations`;
 CREATE TABLE `center_locations` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `address` text COLLATE=utf8_unicode_ci,
-  `phone` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `email` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `service_times` text COLLATE=utf8_unicode_ci,
-  `description` text COLLATE=utf8_unicode_ci,
-  `image` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(191) NOT NULL,
+  `address` text,
+  `phone` varchar(191) DEFAULT NULL,
+  `email` varchar(191) DEFAULT NULL,
+  `service_times` text,
+  `description` text,
+  `image` varchar(191) DEFAULT NULL,
   `display_order` int NOT NULL DEFAULT '0',
-  `status` enum('published','draft') COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'draft',
+  `status` enum('published','draft') NOT NULL DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `church_members`;
 CREATE TABLE `church_members` (
@@ -134,7 +134,7 @@ CREATE TABLE `church_members` (
   `center_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `church_members_center_id_foreign` (`center_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `church_staff`;
 CREATE TABLE `church_staff` (
@@ -151,7 +151,7 @@ CREATE TABLE `church_staff` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `member_id` (`member_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `contact_messages`;
 CREATE TABLE `contact_messages` (
@@ -165,22 +165,22 @@ CREATE TABLE `contact_messages` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `devotionals`;
 CREATE TABLE `devotionals` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(200) CHARACTER SET utf8 COLLATE=utf8_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `content` text CHARACTER SET utf8 COLLATE=utf8_unicode_ci NOT NULL,
-  `scripture_reference` varchar(100) CHARACTER SET utf8 COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `scripture_text` text CHARACTER SET utf8 COLLATE=utf8_unicode_ci,
-  `prayer` text CHARACTER SET utf8 COLLATE=utf8_unicode_ci,
-  `reflection_questions` text CHARACTER SET utf8 COLLATE=utf8_unicode_ci,
-  `author` varchar(100) CHARACTER SET utf8 COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `title` varchar(200) CHARACTER SET utf8 NOT NULL,
+  `slug` varchar(255) DEFAULT NULL,
+  `content` text CHARACTER SET utf8 NOT NULL,
+  `scripture_reference` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
+  `scripture_text` text CHARACTER SET utf8,
+  `prayer` text CHARACTER SET utf8,
+  `reflection_questions` text CHARACTER SET utf8,
+  `author` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
   `devotional_date` date NOT NULL,
   `image_id` int DEFAULT NULL,
-  `status` enum('draft','published','scheduled') CHARACTER SET utf8 COLLATE=utf8_unicode_ci DEFAULT 'draft',
+  `status` enum('draft','published','scheduled') CHARACTER SET utf8 DEFAULT 'draft',
   `featured` tinyint(1) DEFAULT '0',
   `views_count` int DEFAULT '0',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -190,7 +190,7 @@ CREATE TABLE `devotionals` (
   UNIQUE KEY `devotionals_slug_unique` (`slug`),
   KEY `image_id` (`image_id`),
   CONSTRAINT `devotionals_ibfk_1` FOREIGN KEY (`image_id`) REFERENCES `media` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `events`;
 CREATE TABLE `events` (
@@ -207,65 +207,65 @@ CREATE TABLE `events` (
   `end_date` datetime DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `failed_jobs`;
 CREATE TABLE `failed_jobs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `connection` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `queue` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `payload` longtext COLLATE=utf8_unicode_ci NOT NULL,
-  `exception` longtext COLLATE=utf8_unicode_ci NOT NULL,
+  `uuid` varchar(191) NOT NULL,
+  `connection` varchar(191) NOT NULL,
+  `queue` varchar(191) NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `financial_accounts`;
 CREATE TABLE `financial_accounts` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `type` enum('bank','cash','mobile_money') COLLATE=utf8_unicode_ci NOT NULL,
-  `account_number` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `bank_name` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `branch` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(191) NOT NULL,
+  `type` enum('bank','cash','mobile_money') NOT NULL,
+  `account_number` varchar(191) DEFAULT NULL,
+  `bank_name` varchar(191) DEFAULT NULL,
+  `branch` varchar(191) DEFAULT NULL,
   `opening_balance` decimal(12,2) NOT NULL DEFAULT '0.00',
   `current_balance` decimal(12,2) NOT NULL DEFAULT '0.00',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `notes` text COLLATE=utf8_unicode_ci,
+  `notes` text,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `financial_campaigns`;
 CREATE TABLE `financial_campaigns` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `description` text COLLATE=utf8_unicode_ci,
+  `title` varchar(191) NOT NULL,
+  `description` text,
   `target_amount` decimal(12,2) NOT NULL,
   `raised_amount` decimal(12,2) NOT NULL DEFAULT '0.00',
   `start_date` date NOT NULL,
   `end_date` date DEFAULT NULL,
-  `status` enum('active','completed','cancelled') COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'active',
-  `cover_image` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `status` enum('active','completed','cancelled') NOT NULL DEFAULT 'active',
+  `cover_image` varchar(191) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `financial_funds`;
 CREATE TABLE `financial_funds` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `description` text COLLATE=utf8_unicode_ci,
+  `name` varchar(191) NOT NULL,
+  `description` text,
   `target_amount` decimal(12,2) DEFAULT NULL,
   `current_amount` decimal(12,2) NOT NULL DEFAULT '0.00',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `financial_pledges`;
 CREATE TABLE `financial_pledges` (
@@ -274,36 +274,36 @@ CREATE TABLE `financial_pledges` (
   `campaign_id` bigint unsigned DEFAULT NULL,
   `pledge_amount` decimal(12,2) NOT NULL,
   `amount_paid` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `payment_schedule` text COLLATE=utf8_unicode_ci,
-  `status` enum('active','completed','cancelled') COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'active',
+  `payment_schedule` text,
+  `status` enum('active','completed','cancelled') NOT NULL DEFAULT 'active',
   `pledge_date` date NOT NULL,
-  `notes` text COLLATE=utf8_unicode_ci,
+  `notes` text,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `financial_pledges_member_id_foreign` (`member_id`),
   KEY `financial_pledges_campaign_id_foreign` (`campaign_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `financial_transactions`;
 CREATE TABLE `financial_transactions` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `type` enum('inflow','outflow') COLLATE=utf8_unicode_ci NOT NULL,
-  `category` enum('tithe','offering','special_offering','building_fund','pledge','other_income','ministry_expense','administrative','utilities','salary','maintenance','missions','other_expense') COLLATE=utf8_unicode_ci NOT NULL,
+  `type` enum('inflow','outflow') NOT NULL,
+  `category` enum('tithe','offering','special_offering','building_fund','pledge','other_income','ministry_expense','administrative','utilities','salary','maintenance','missions','other_expense') NOT NULL,
   `amount` decimal(12,2) NOT NULL,
-  `payment_method` enum('cash','bank_transfer','check','mobile_money','other') COLLATE=utf8_unicode_ci NOT NULL,
+  `payment_method` enum('cash','bank_transfer','check','mobile_money','other') NOT NULL,
   `account_id` bigint unsigned DEFAULT NULL,
   `fund_id` bigint unsigned DEFAULT NULL,
   `transaction_date` date NOT NULL,
-  `description` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `reference_number` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(191) DEFAULT NULL,
+  `reference_number` varchar(191) DEFAULT NULL,
   `member_id` bigint unsigned DEFAULT NULL,
   `recorded_by` bigint unsigned NOT NULL,
-  `status` enum('pending','approved','rejected') COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'approved',
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'approved',
   `approved_by` bigint unsigned DEFAULT NULL,
   `approved_at` timestamp NULL DEFAULT NULL,
   `reconciled` tinyint(1) NOT NULL DEFAULT '0',
-  `notes` text COLLATE=utf8_unicode_ci,
+  `notes` text,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -316,25 +316,25 @@ CREATE TABLE `financial_transactions` (
   KEY `financial_transactions_type_index` (`type`),
   KEY `financial_transactions_category_index` (`category`),
   KEY `financial_transactions_status_index` (`status`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `hero_settings`;
 CREATE TABLE `hero_settings` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) COLLATE=utf8_unicode_ci DEFAULT NULL COMMENT 'Global hero title (replaces per-slider titles)',
-  `badge_text` varchar(255) COLLATE=utf8_unicode_ci DEFAULT NULL COMMENT 'Text shown in the glass badge (e.g. "Worship With Us")',
-  `prefix_text` varchar(255) COLLATE=utf8_unicode_ci DEFAULT NULL COMMENT 'Text before the title (e.g. "Welcome to")',
-  `suffix_text` varchar(255) COLLATE=utf8_unicode_ci DEFAULT NULL COMMENT 'Text after the title (e.g. "Ministries")',
-  `description` text COLLATE=utf8_unicode_ci COMMENT 'Global hero description (replaces per-slider descriptions)',
-  `button_text` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL COMMENT 'Text for the hero CTA button',
-  `button_link` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL COMMENT 'URL for the hero CTA button',
+  `title` varchar(255) DEFAULT NULL COMMENT 'Global hero title (replaces per-slider titles)',
+  `badge_text` varchar(255) DEFAULT NULL COMMENT 'Text shown in the glass badge (e.g. "Worship With Us")',
+  `prefix_text` varchar(255) DEFAULT NULL COMMENT 'Text before the title (e.g. "Welcome to")',
+  `suffix_text` varchar(255) DEFAULT NULL COMMENT 'Text after the title (e.g. "Ministries")',
+  `description` text COMMENT 'Global hero description (replaces per-slider descriptions)',
+  `button_text` varchar(191) DEFAULT NULL COMMENT 'Text for the hero CTA button',
+  `button_link` varchar(191) DEFAULT NULL COMMENT 'URL for the hero CTA button',
   `show_button` tinyint(1) NOT NULL DEFAULT '1',
   `show_badge` tinyint(1) NOT NULL DEFAULT '1',
   `show_description` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `homepage_sections`;
 CREATE TABLE `homepage_sections` (
@@ -351,7 +351,7 @@ CREATE TABLE `homepage_sections` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `section_key` (`section_key`),
   KEY `image_id` (`image_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `homepage_services`;
 CREATE TABLE `homepage_services` (
@@ -364,7 +364,7 @@ CREATE TABLE `homepage_services` (
   `status` enum('draft','published') DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `homepage_sliders`;
 CREATE TABLE `homepage_sliders` (
@@ -382,35 +382,35 @@ CREATE TABLE `homepage_sliders` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `image_id` (`image_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `job_batches`;
 CREATE TABLE `job_batches` (
-  `id` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `name` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
+  `id` varchar(191) NOT NULL,
+  `name` varchar(191) NOT NULL,
   `total_jobs` int NOT NULL,
   `pending_jobs` int NOT NULL,
   `failed_jobs` int NOT NULL,
-  `failed_job_ids` longtext COLLATE=utf8_unicode_ci NOT NULL,
-  `options` mediumtext COLLATE=utf8_unicode_ci,
+  `failed_job_ids` longtext NOT NULL,
+  `options` mediumtext,
   `cancelled_at` int DEFAULT NULL,
   `created_at` int NOT NULL,
   `finished_at` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `jobs`;
 CREATE TABLE `jobs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `queue` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `payload` longtext COLLATE=utf8_unicode_ci NOT NULL,
+  `queue` varchar(191) NOT NULL,
+  `payload` longtext NOT NULL,
   `attempts` smallint unsigned NOT NULL,
   `reserved_at` int unsigned DEFAULT NULL,
   `available_at` int unsigned NOT NULL,
   `created_at` int unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `jobs_queue_index` (`queue`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `media`;
 CREATE TABLE `media` (
@@ -422,7 +422,7 @@ CREATE TABLE `media` (
   `file_size` int NOT NULL,
   `uploaded_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `menu_items`;
 CREATE TABLE `menu_items` (
@@ -440,7 +440,7 @@ CREATE TABLE `menu_items` (
   PRIMARY KEY (`id`),
   KEY `menu_id` (`menu_id`),
   KEY `parent_id` (`parent_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `menus`;
 CREATE TABLE `menus` (
@@ -452,7 +452,7 @@ CREATE TABLE `menus` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `message_replies`;
 CREATE TABLE `message_replies` (
@@ -465,45 +465,45 @@ CREATE TABLE `message_replies` (
   PRIMARY KEY (`id`),
   KEY `message_id` (`message_id`),
   KEY `sent_by` (`sent_by`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `migration` varchar(255) COLLATE=utf8_unicode_ci NOT NULL,
+  `migration` varchar(255) NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=86 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `ministry_columns`;
 CREATE TABLE `ministry_columns` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `column_type` varchar(191) COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'ministry',
-  `icon_class` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `title` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `subtitle` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `description` text COLLATE=utf8_unicode_ci,
-  `quote_author` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `column_type` varchar(191) NOT NULL DEFAULT 'ministry',
+  `icon_class` varchar(191) DEFAULT NULL,
+  `title` varchar(191) DEFAULT NULL,
+  `subtitle` varchar(191) DEFAULT NULL,
+  `description` text,
+  `quote_author` varchar(191) DEFAULT NULL,
   `display_order` int NOT NULL DEFAULT '0',
-  `status` varchar(191) COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'published',
+  `status` varchar(191) NOT NULL DEFAULT 'published',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `newsletter_subscribers`;
 CREATE TABLE `newsletter_subscribers` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `name` varchar(100) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `verification_token` varchar(64) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `status` varchar(20) COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'pending',
+  `email` varchar(191) NOT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `verification_token` varchar(64) DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'pending',
   `subscribed_at` timestamp NULL DEFAULT NULL,
   `verified_at` timestamp NULL DEFAULT NULL,
-  `unsubscribe_token` varchar(64) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `unsubscribe_token` varchar(64) DEFAULT NULL,
   `unsubscribed_at` timestamp NULL DEFAULT NULL,
   `bounced_at` timestamp NULL DEFAULT NULL,
-  `bounce_reason` text COLLATE=utf8_unicode_ci,
+  `bounce_reason` text,
   `complaint_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -514,43 +514,43 @@ CREATE TABLE `newsletter_subscribers` (
   KEY `newsletter_subscribers_verification_token_index` (`verification_token`),
   KEY `newsletter_subscribers_unsubscribe_token_index` (`unsubscribe_token`),
   KEY `newsletter_subscribers_status_index` (`status`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `newsletter_tracking`;
 CREATE TABLE `newsletter_tracking` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `newsletter_id` bigint unsigned NOT NULL,
   `subscriber_id` bigint unsigned NOT NULL,
-  `event` varchar(20) COLLATE=utf8_unicode_ci NOT NULL,
-  `link_url` varchar(2048) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `user_agent` varchar(500) COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `ip_address` varchar(45) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `event` varchar(20) NOT NULL,
+  `link_url` varchar(2048) DEFAULT NULL,
+  `user_agent` varchar(500) DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
   `occurred_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `newsletter_tracking_subscriber_id_foreign` (`subscriber_id`),
   KEY `newsletter_tracking_newsletter_id_subscriber_id_index` (`newsletter_id`,`subscriber_id`),
   KEY `newsletter_tracking_event_index` (`event`),
   KEY `newsletter_tracking_occurred_at_index` (`occurred_at`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `newsletters`;
 CREATE TABLE `newsletters` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `subject` varchar(255) COLLATE=utf8_unicode_ci NOT NULL,
-  `content` longtext COLLATE=utf8_unicode_ci NOT NULL,
-  `status` varchar(20) COLLATE=utf8_unicode_ci NOT NULL DEFAULT 'draft',
+  `subject` varchar(255) NOT NULL,
+  `content` longtext NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'draft',
   `sent_at` timestamp NULL DEFAULT NULL,
   `scheduled_at` timestamp NULL DEFAULT NULL,
   `total_sent` int unsigned NOT NULL DEFAULT '0',
   `opens_count` int unsigned NOT NULL DEFAULT '0',
   `clicks_count` int unsigned NOT NULL DEFAULT '0',
-  `test_email` varchar(191) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `test_email` varchar(191) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `newsletters_status_index` (`status`),
   KEY `newsletters_scheduled_at_index` (`scheduled_at`)
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `offerings`;
 CREATE TABLE `offerings` (
@@ -566,7 +566,7 @@ CREATE TABLE `offerings` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `recorded_by` (`recorded_by`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `pages`;
 CREATE TABLE `pages` (
@@ -580,13 +580,13 @@ CREATE TABLE `pages` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `password_resets`;
 CREATE TABLE `password_resets` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
-  `token` varchar(191) COLLATE=utf8_unicode_ci NOT NULL,
+  `email` varchar(191) NOT NULL,
+  `token` varchar(191) NOT NULL,
   `expires_at` timestamp NOT NULL,
   `used_at` timestamp NULL DEFAULT NULL,
   `attempts` tinyint unsigned NOT NULL DEFAULT '0',
@@ -594,7 +594,7 @@ CREATE TABLE `password_resets` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `password_resets_email_index` (`email`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `permissions`;
 CREATE TABLE `permissions` (
@@ -605,7 +605,7 @@ CREATE TABLE `permissions` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=55 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=55 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `quotes`;
 CREATE TABLE `quotes` (
@@ -618,7 +618,7 @@ CREATE TABLE `quotes` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `image_id` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `role_permissions`;
 CREATE TABLE `role_permissions` (
@@ -626,19 +626,19 @@ CREATE TABLE `role_permissions` (
   `permission_id` int NOT NULL,
   PRIMARY KEY (`role_id`,`permission_id`),
   KEY `permission_id` (`permission_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) CHARACTER SET utf8 COLLATE=utf8_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8 COLLATE=utf8_unicode_ci,
+  `name` varchar(50) CHARACTER SET utf8 NOT NULL,
+  `description` text CHARACTER SET utf8,
   `is_super_admin` tinyint(1) DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sermon_media`;
 CREATE TABLE `sermon_media` (
@@ -650,7 +650,7 @@ CREATE TABLE `sermon_media` (
   PRIMARY KEY (`id`),
   KEY `sermon_id` (`sermon_id`),
   KEY `media_id` (`media_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sermon_series`;
 CREATE TABLE `sermon_series` (
@@ -662,7 +662,7 @@ CREATE TABLE `sermon_series` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `image_id` (`image_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sermons`;
 CREATE TABLE `sermons` (
@@ -684,7 +684,7 @@ CREATE TABLE `sermons` (
   KEY `series_id` (`series_id`),
   KEY `media_id` (`media_id`),
   KEY `image_id` (`image_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `service_types`;
 CREATE TABLE `service_types` (
@@ -695,7 +695,7 @@ CREATE TABLE `service_types` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `site_settings`;
 CREATE TABLE `site_settings` (
@@ -707,7 +707,7 @@ CREATE TABLE `site_settings` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `setting_key` (`setting_key`,`setting_group`)
-) ENGINE=MyISAM AUTO_INCREMENT=69 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `song_media`;
 CREATE TABLE `song_media` (
@@ -719,7 +719,7 @@ CREATE TABLE `song_media` (
   KEY `media_id` (`media_id`),
   CONSTRAINT `song_media_ibfk_1` FOREIGN KEY (`song_id`) REFERENCES `songs` (`id`) ON DELETE CASCADE,
   CONSTRAINT `song_media_ibfk_2` FOREIGN KEY (`media_id`) REFERENCES `media` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `songs`;
 CREATE TABLE `songs` (
@@ -733,7 +733,7 @@ CREATE TABLE `songs` (
   `featured` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `songs_slug_unique` (`slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `two_factor_codes`;
 CREATE TABLE `two_factor_codes` (
@@ -747,19 +747,19 @@ CREATE TABLE `two_factor_codes` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `two_factor_codes_user_id_expires_at_index` (`user_id`,`expires_at`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) CHARACTER SET utf8 COLLATE=utf8_unicode_ci NOT NULL,
-  `email` varchar(100) CHARACTER SET utf8 COLLATE=utf8_unicode_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8 COLLATE=utf8_unicode_ci NOT NULL,
-  `first_name` varchar(50) CHARACTER SET utf8 COLLATE=utf8_unicode_ci DEFAULT NULL,
-  `last_name` varchar(50) CHARACTER SET utf8 COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `username` varchar(50) CHARACTER SET utf8 NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8 NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `first_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+  `last_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
   `role_id` int DEFAULT NULL,
-  `status` enum('active','inactive') CHARACTER SET utf8 COLLATE=utf8_unicode_ci DEFAULT 'active',
-  `remember_token` varchar(100) COLLATE=utf8_unicode_ci DEFAULT NULL,
+  `status` enum('active','inactive') CHARACTER SET utf8 DEFAULT 'active',
+  `remember_token` varchar(100) DEFAULT NULL,
   `last_login` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -768,7 +768,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `email` (`email`),
   KEY `role_id` (`role_id`),
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 
 
