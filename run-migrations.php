@@ -68,21 +68,31 @@ try {
     }
     echo "✅ Dropped " . count($tables) . " existing tables.\n";
 
-    // Step 2: Disable FK checks on Laravel's OWN DB connection (what the migrator uses)
-    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0');
-    echo "✅ FK checks disabled on Laravel DB connection.\n";
+    // Step 2: Inject FOREIGN_KEY_CHECKS=0 into every MySQL connection Laravel opens.
+    // The 'options' key maps to PDO::MYSQL_ATTR_INIT_COMMAND which runs on every new connection.
+    config(['database.connections.mysql.options' => [
+        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET FOREIGN_KEY_CHECKS=0',
+    ]]);
+    // Disconnect to force reconnect with new options
+    \Illuminate\Support\Facades\DB::purge('mysql');
+    \Illuminate\Support\Facades\DB::reconnect('mysql');
+    echo "✅ FK checks disabled via MYSQL_ATTR_INIT_COMMAND on all connections.\n";
 
-    // Step 3: Run migrate (not migrate:fresh — tables already dropped above)
+    // Step 3: Run migrate (tables already dropped above, no need for migrate:fresh)
     $status = $kernel->call('migrate', ['--force' => true]);
     echo $kernel->output();
 
-    // Step 4: Run seeders
+    // Step 4: Re-enable FK checks and run seeders
+    config(['database.connections.mysql.options' => [
+        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET FOREIGN_KEY_CHECKS=1',
+    ]]);
+    \Illuminate\Support\Facades\DB::purge('mysql');
+    \Illuminate\Support\Facades\DB::reconnect('mysql');
+
     echo "=== RUNNING SEEDERS ===\n";
     $kernel->call('db:seed', ['--force' => true]);
     echo $kernel->output();
-
-    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1');
-    echo "✅ Foreign key checks re-enabled.\n\n";
+    echo "✅ Seeders complete.\n\n";
 
     // Ensure storage/installed flag exists
     $installedFlag = $basePath . '/storage/installed';
