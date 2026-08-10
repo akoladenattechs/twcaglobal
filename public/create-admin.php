@@ -5,7 +5,9 @@
 $basePath = file_exists(__DIR__ . '/../artisan') ? dirname(__DIR__) : __DIR__;
 require $basePath . '/vendor/autoload.php';
 $app = require_once $basePath . '/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$request = Illuminate\Http\Request::capture();
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+$response = $kernel->handle($request);
 
 $message = '';
 $success = false;
