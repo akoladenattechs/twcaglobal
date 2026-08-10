@@ -54,6 +54,11 @@ try {
         throw new Exception("MySQL credentials failed. Please check cPanel -> MySQL Databases to verify the password for 'twmaorgn_twcachurchadmin' or add 'twmaorgn' to database 'twmaorgn_twcachurch'.");
     }
 
+    echo "=== RUNNING SEEDERS (Superadmin & Roles) ===\n";
+    $kernel->call('db:seed', ['--force' => true]);
+    echo $kernel->output();
+    echo "✅ Seeders completed!\n\n";
+
     echo "=== REBUILDING LARAVEL CACHES ===\n";
     $kernel->call('config:cache');
     $kernel->call('route:cache');
