@@ -5,10 +5,13 @@ error_reporting(E_ALL);
 
 $basePath = file_exists(__DIR__ . '/../artisan') ? dirname(__DIR__) : __DIR__;
 
-// Clear cached config so fresh .env is loaded
-$cachedConfig = $basePath . '/bootstrap/cache/config.php';
-if (file_exists($cachedConfig)) {
-    @unlink($cachedConfig);
+// Force-delete any cached config file BEFORE loading Laravel bootstrap
+$cacheFile = $basePath . '/bootstrap/cache/config.php';
+if (file_exists($cacheFile)) {
+    @unlink($cacheFile);
+    echo "<pre>✅ Deleted cached bootstrap/cache/config.php file.\n";
+} else {
+    echo "<pre>";
 }
 
 try {
@@ -17,7 +20,6 @@ try {
 
     $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 
-    echo "<pre>";
     echo "=== REFRESHING CONFIG CACHE ===\n";
     $kernel->call('config:clear');
     echo "Config cache cleared.\n\n";
@@ -68,10 +70,10 @@ try {
     echo "✅ Seeders completed!\n\n";
 
     echo "=== REBUILDING LARAVEL CACHES ===\n";
-    $kernel->call('config:cache');
+    $kernel->call('config:clear');
     $kernel->call('route:cache');
     $kernel->call('view:clear');
-    echo "✅ Config and Route caches refreshed!\n\n";
+    echo "✅ Config cleared and Route cache refreshed!\n\n";
 
     // Ensure installed flag file exists
     $installedFlag = $basePath . '/storage/installed';
