@@ -51,17 +51,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
             $now = date('Y-m-d H:i:s');
 
+            // Split Full Name into first_name and last_name
+            $parts = explode(' ', $name, 2);
+            $firstName = $parts[0] ?? $name;
+            $lastName = $parts[1] ?? '';
+
             // Check if user already exists by email
             $checkStmt = $pdo->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
             $checkStmt->execute([$email]);
             $existingId = $checkStmt->fetchColumn();
 
             if ($existingId) {
-                $updateStmt = $pdo->prepare("UPDATE users SET name = ?, username = ?, password = ?, role_id = ?, status = 'active', updated_at = ? WHERE id = ?");
-                $updateStmt->execute([$name, $username, $hashedPassword, $roleId, $now, $existingId]);
+                $updateStmt = $pdo->prepare("UPDATE users SET first_name = ?, last_name = ?, username = ?, password = ?, role_id = ?, status = 'active', updated_at = ? WHERE id = ?");
+                $updateStmt->execute([$firstName, $lastName, $username, $hashedPassword, $roleId, $now, $existingId]);
             } else {
-                $insertStmt = $pdo->prepare("INSERT INTO users (name, username, email, password, role_id, status, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'active', 1, ?, ?)");
-                $insertStmt->execute([$name, $username, $email, $hashedPassword, $roleId, $now, $now]);
+                $insertStmt = $pdo->prepare("INSERT INTO users (first_name, last_name, username, email, password, role_id, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'active', ?, ?)");
+                $insertStmt->execute([$firstName, $lastName, $username, $email, $hashedPassword, $roleId, $now, $now]);
             }
 
             $success = true;
