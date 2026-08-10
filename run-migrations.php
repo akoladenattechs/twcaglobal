@@ -54,60 +54,38 @@ try {
         throw new Exception("MySQL credentials failed. Please check cPanel -> MySQL Databases to verify the password for 'twmaorgn_twcachurchadmin' or add 'twmaorgn' to database 'twmaorgn_twcachurch'.");
     }
 
-    echo "=== REBUILDING ALL TABLES VIA MIGRATIONS ===\n";
+    echo "=== RUNNING LARAVEL NATIVE MIGRATIONS & SEEDERS ===\n";
 
-    // Open a direct PDO connection to drop tables & disable FK checks
+    // Drop all tables via PDO to guarantee a clean slate
     $dsn = "mysql:host=localhost;dbname={$config['database']};charset=utf8";
     $pdo = new PDO($dsn, $config['username'], $config['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-
-    // Step 1: Drop ALL existing tables cleanly via PDO (bypasses Laravel's db:wipe FK issues)
     $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
     $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
     foreach ($tables as $table) {
         $pdo->exec("DROP TABLE IF EXISTS `$table`");
     }
-    echo "✅ Dropped " . count($tables) . " existing tables.\n";
+    $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
+    echo "✅ Cleaned database slate (" . count($tables) . " old tables removed).\n\n";
 
-    // Step 2: Inject FOREIGN_KEY_CHECKS=0 into every MySQL connection Laravel opens.
-    // The 'options' key maps to PDO::MYSQL_ATTR_INIT_COMMAND which runs on every new connection.
-    config(['database.connections.mysql.options' => [
-        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET FOREIGN_KEY_CHECKS=0',
-    ]]);
-    // Disconnect to force reconnect with new options
-    \Illuminate\Support\Facades\DB::purge('mysql');
-    \Illuminate\Support\Facades\DB::reconnect('mysql');
-    echo "✅ FK checks disabled via MYSQL_ATTR_INIT_COMMAND on all connections.\n";
-
-    // Step 3: Run migrate (tables already dropped above, no need for migrate:fresh)
-    $status = $kernel->call('migrate', ['--force' => true]);
+    // Execute standard Laravel migration & seeding
+    $status = $kernel->call('migrate:fresh', [
+        '--seed' => true,
+        '--force' => true,
+    ]);
     echo $kernel->output();
 
-    // Step 4: Re-enable FK checks and run seeders
-    config(['database.connections.mysql.options' => [
-        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET FOREIGN_KEY_CHECKS=1',
-    ]]);
-    \Illuminate\Support\Facades\DB::purge('mysql');
-    \Illuminate\Support\Facades\DB::reconnect('mysql');
-
-    echo "=== RUNNING SEEDERS ===\n";
-    $kernel->call('db:seed', ['--force' => true]);
-    echo $kernel->output();
-    echo "✅ Seeders complete.\n\n";
-
-    // Ensure storage/installed flag exists
+    // Ensure installed flag file exists
     $installedFlag = $basePath . '/storage/installed';
-    if (! file_exists($installedFlag)) {
-        @file_put_contents($installedFlag, date('Y-m-d H:i:s'));
-        echo "✅ Created storage/installed flag.\n\n";
-    }
+    @file_put_contents($installedFlag, date('Y-m-d H:i:s'));
+    echo "\n✅ Created storage/installed flag.\n";
 
-    echo "=== CLEARING & REBUILDING CACHES ===\n";
+    echo "\n=== CLEARING & REBUILDING CACHES ===\n";
     $kernel->call('config:cache');
     $kernel->call('route:cache');
     $kernel->call('view:cache');
     echo "Caches refreshed successfully!\n";
 
-    echo "\n=== SUCCESS! YOUR SITE IS NOW 100% LIVE! ===\n";
+    echo "\n=== SUCCESS! YOUR SITE IS NOW 100% LIVE & PROPERLY INSTALLED! ===\n";
     echo "</pre>";
 } catch (Throwable $e) {
     echo "<pre style='color:red;'>";
