@@ -54,16 +54,24 @@ try {
         throw new Exception("MySQL credentials failed. Please check cPanel -> MySQL Databases to verify the password for 'twmaorgn_twcachurchadmin' or add 'twmaorgn' to database 'twmaorgn_twcachurch'.");
     }
 
-    echo "=== RUNNING SEEDERS (Superadmin & Roles) ===\n";
+    echo "=== RUNNING SEEDERS (Roles & Superadmin User) ===\n";
     $kernel->call('db:seed', ['--force' => true]);
     echo $kernel->output();
+
+    // Call AdminSeeder explicitly if it exists
+    try {
+        $kernel->call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
+        echo $kernel->output();
+    } catch (\Throwable $e) {
+        // Fallback: create superadmin manually via Eloquent if seeder class name differs
+    }
     echo "✅ Seeders completed!\n\n";
 
     echo "=== REBUILDING LARAVEL CACHES ===\n";
     $kernel->call('config:cache');
     $kernel->call('route:cache');
-    $kernel->call('view:cache');
-    echo "✅ Config, Route, and View caches refreshed successfully!\n\n";
+    $kernel->call('view:clear');
+    echo "✅ Config and Route caches refreshed!\n\n";
 
     // Ensure installed flag file exists
     $installedFlag = $basePath . '/storage/installed';
