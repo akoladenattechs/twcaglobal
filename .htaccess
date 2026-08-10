@@ -19,8 +19,13 @@
     RewriteRule ^(.+)$ public/$1 [L]
 
     # Route /admin and /admin/* through Laravel (admin is a Laravel route,
-    # but public/admin/ physically exists for static assets).
+    # but skip if physically existing static file like admin/logo.png or admin/assets/...)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^admin$ index.php [L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^admin/(.+)$ index.php [L]
 
     # Hard 404 for legacy debugging/utility scripts that must NEVER be
