@@ -22,24 +22,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = 'All fields are required.';
     } else {
         try {
-            $superAdminRole = \App\Models\Role::where('is_super_admin', true)->first();
-            if (! $superAdminRole) {
-                // Ensure roles are seeded
-                $kernel->call('db:seed', ['--force' => true]);
-                $superAdminRole = \App\Models\Role::where('is_super_admin', true)->first();
+            $env = file_get_contents($basePath . '/.env');
+            preg_match('/^DB_HOST=(.+)$/m', $env, $mHost);
+            preg_match('/^DB_DATABASE=(.+)$/m', $env, $mDb);
+            preg_match('/^DB_USERNAME=(.+)$/m', $env, $mUser);
+            preg_match('/^DB_PASSWORD=(.+)$/m', $env, $mPass);
+            $host = trim($mHost[1] ?? 'localhost');
+            $db   = trim($mDb[1] ?? '');
+            $user = trim($mUser[1] ?? '');
+            $pass = trim($mPass[1] ?? '');
+
+            // Connect via PDO (test localhost first if 127.0.0.1)
+            try {
+                $pdo = new PDO("mysql:host=localhost;dbname=$db;charset=utf8", $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+            } catch (Throwable $e1) {
+                $pdo = new PDO("mysql:host=127.0.0.1;dbname=$db;charset=utf8", $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
             }
 
-            $user = \App\Models\User::updateOrCreate(
-                ['email' => $email],
-                [
-                    'name' => $name,
-                    'username' => $username,
-                    'password' => \Illuminate\Support\Facades\Hash::make($password),
-                    'role_id' => $superAdminRole->id ?? 1,
-                    'status' => 'active',
-                    'is_active' => true,
-                ]
-            );
+            // Find superadmin role ID
+            $stmt = $pdo->prepare("SELECT id FROM roles WHERE is_super_admin = 1 LIMIT 1");
+            $stmt->execute();
+            $roleId = $stmt->fetchColumn();
+
+            if (! $roleId) {
+                $roleId = 1; // Default fallback
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+            $now = date('Y-m-d H:i:s');
+
+            // Check if user already exists by email
+            $checkStmt = $pdo->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+            $checkStmt->execute([$email]);
+            $existingId = $checkStmt->fetchColumn();
+
+            if ($existingId) {
+                $updateStmt = $pdo->prepare("UPDATE users SET name = ?, username = ?, password = ?, role_id = ?, status = 'active', updated_at = ? WHERE id = ?");
+                $updateStmt->execute([$name, $username, $hashedPassword, $roleId, $now, $existingId]);
+            } else {
+                $insertStmt = $pdo->prepare("INSERT INTO users (name, username, email, password, role_id, status, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'active', 1, ?, ?)");
+                $insertStmt->execute([$name, $username, $email, $hashedPassword, $roleId, $now, $now]);
+            }
 
             $success = true;
             $message = "Superadmin account '{$username}' created successfully! You can now log into the Admin Panel.";
