@@ -28,113 +28,122 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        try {
+            $request->validate([
+                'username' => 'required|string',
+                'password' => 'required|string',
+            ]);
 
-        $username = $request->username;
+            $username = $request->username;
 
-        // ── Per-account lockout after repeated failed attempts ──
-        $lockoutKey = 'login-lockout:'.strtolower($username);
-        if (RateLimiter::tooManyAttempts($lockoutKey, self::MAX_LOGIN_ATTEMPTS)) {
-            $seconds = RateLimiter::availableIn($lockoutKey);
-            $minutes = max(1, (int) ceil($seconds / 60));
-            $message = "Too many failed login attempts. Account temporarily locked. Try again in {$minutes} minute(s).";
+            // ── Per-account lockout after repeated failed attempts ──
+            $lockoutKey = 'login-lockout:'.strtolower($username);
+            if (RateLimiter::tooManyAttempts($lockoutKey, self::MAX_LOGIN_ATTEMPTS)) {
+                $seconds = RateLimiter::availableIn($lockoutKey);
+                $minutes = max(1, (int) ceil($seconds / 60));
+                $message = "Too many failed login attempts. Account temporarily locked. Try again in {$minutes} minute(s).";
 
-            if ($request->expectsJson()) {
-                return response()->json(['success' => false, 'message' => $message], 429);
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => $message], 429);
+                }
+
+                return back()->with('error', $message);
             }
 
-            return back()->with('error', $message);
-        }
+            $user = User::where('username', $username)->first();
 
-        $user = User::where('username', $username)->first();
+            if (! $user || ! Hash::check($request->password, $user->password)) {
+                // Record the failed attempt — generic message prevents user enumeration
+                RateLimiter::hit($lockoutKey, self::LOGIN_LOCKOUT_MINUTES * 60);
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            // Record the failed attempt — generic message prevents user enumeration
-            RateLimiter::hit($lockoutKey, self::LOGIN_LOCKOUT_MINUTES * 60);
+                ActivityLog::record(null, 'login_failed', 'Failed admin login attempt for username: '.$username, $request);
 
-            ActivityLog::record(null, 'login_failed', 'Failed admin login attempt for username: '.$username, $request);
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Invalid username or password',
+                    ], 401);
+                }
 
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid username or password',
-                ], 401);
+                return back()->with('error', 'Invalid username or password');
             }
 
-            return back()->with('error', 'Invalid username or password');
-        }
+            // Deactivated accounts cannot sign in
+            if ($user->status === 'inactive') {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Access denied',
+                    ], 403);
+                }
 
-        // Deactivated accounts cannot sign in
-        if ($user->status === 'inactive') {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Access denied',
-                ], 403);
+                return back()->with('error', 'Access denied');
             }
 
-            return back()->with('error', 'Access denied');
-        }
+            if (! $user->hasPermission('access_admin')) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Access denied',
+                    ], 403);
+                }
 
-        if (! $user->hasPermission('access_admin')) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Access denied',
-                ], 403);
+                return back()->with('error', 'Access denied');
             }
 
-            return back()->with('error', 'Access denied');
-        }
+            // ── Successful login — clear any accumulated lockout ───
+            RateLimiter::clear($lockoutKey);
 
-        // ── Successful login — clear any accumulated lockout ───
-        RateLimiter::clear($lockoutKey);
+            // ── Email 2FA verification ─────────────────────────────
+            if (! $request->expectsJson() || $user->isSuperAdmin()) {
+                try {
+                    $this->sendTwoFactorCode($user, $request);
+                } catch (\Throwable $mEx) {
+                    logger()->error('2FA send failed: '.$mEx->getMessage());
+                }
 
-        // ── Email 2FA verification ─────────────────────────────
-        // Web admin logins (admin/login) require 2FA for EVERY user.
-        // The API keeps super-admin-only 2FA (non-super-admin API clients
-        // authenticate directly with their credentials).
-        if (! $request->expectsJson() || $user->isSuperAdmin()) {
-            $this->sendTwoFactorCode($user, $request);
+                if ($request->hasSession()) {
+                    $request->session()->put('pending_2fa_user_id', $user->id);
+                    $request->session()->put('pending_2fa_email', $user->email);
+                    $request->session()->put('pending_2fa_remember', $request->boolean('remember'));
+                }
 
-            if ($request->hasSession()) {
-                $request->session()->put('pending_2fa_user_id', $user->id);
-                $request->session()->put('pending_2fa_email', $user->email);
-                $request->session()->put('pending_2fa_remember', $request->boolean('remember'));
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Two-factor verification required. A verification code has been sent to your email.',
+                        'two_factor_required' => true,
+                        'email' => $user->email,
+                    ], 202);
+                }
+
+                return redirect()->route('admin.two-factor.verify');
             }
+
+            $this->finalizeLogin($user, $request);
 
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Two-factor verification required. A verification code has been sent to your email.',
-                    'two_factor_required' => true,
-                    'email' => $user->email,
-                ], 202);
+                    'message' => 'Login successful',
+                    'user' => [
+                        'id' => $user->id,
+                        'username' => $user->username,
+                        'email' => $user->email,
+                        'first_name' => $user->first_name,
+                        'last_name' => $user->last_name,
+                        'role_id' => $user->role_id,
+                    ],
+                ]);
+            } else {
+                return redirect()->route('admin.dashboard');
             }
-
-            return redirect()->route('admin.two-factor.verify');
-        }
-
-        $this->finalizeLogin($user, $request);
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Login successful',
-                'user' => [
-                    'id' => $user->id,
-                    'username' => $user->username,
-                    'email' => $user->email,
-                    'first_name' => $user->first_name,
-                    'last_name' => $user->last_name,
-                    'role_id' => $user->role_id,
-                ],
-            ]);
-        } else {
-            return redirect()->route('admin.dashboard');
+        } catch (\Throwable $e) {
+            logger()->error('Login error: '.$e->getMessage()."\n".$e->getTraceAsString());
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Login error: '.$e->getMessage()], 500);
+            }
+            return back()->with('error', 'Login error: '.$e->getMessage());
         }
     }
 
