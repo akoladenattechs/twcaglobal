@@ -171,7 +171,11 @@ class FrontendController extends Controller
             $ministryColumns = collect();
         }
 
-        $heroSettings = HeroSetting::getSettings();
+        try {
+            $heroSettings = HeroSetting::getSettings();
+        } catch (\Exception $e) {
+            $heroSettings = new HeroSetting();
+        }
 
         return view('frontend.index', compact('siteSettings', 'sliders', 'heroSettings', 'recentSermons', 'upcomingEvents', 'recentQuotes', 'ministryColumns'));
     }

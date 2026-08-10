@@ -66,20 +66,25 @@ class HeroSetting extends Model
      */
     public static function getSettings(): self
     {
-        $settings = self::first();
-        if (! $settings) {
-            $settings = self::create([
-                'title' => null,
-                'badge_text' => null,
+        try {
+            $settings = self::first();
+            if (! $settings) {
+                $settings = new self([
+                    'prefix_text' => 'Welcome to',
+                    'suffix_text' => 'Ministries',
+                    'show_badge' => true,
+                    'show_description' => true,
+                ]);
+                $settings->save();
+            }
+            return $settings;
+        } catch (\Throwable $e) {
+            return new self([
                 'prefix_text' => 'Welcome to',
                 'suffix_text' => 'Ministries',
-                'description' => null,
                 'show_badge' => true,
                 'show_description' => true,
-                'show_buttons' => true,
             ]);
         }
-
-        return $settings;
     }
 }
