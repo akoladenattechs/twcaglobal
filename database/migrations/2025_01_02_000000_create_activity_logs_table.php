@@ -8,6 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
+
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id')->nullable();
@@ -18,6 +20,8 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
         });
+
+        Schema::enableForeignKeyConstraints();
     }
 
     public function down(): void
