@@ -23,7 +23,7 @@
 /storage/*.key
 /storage/pail
 /storage/installed
-/vendor
+# /vendor is intentionally tracked — server has no composer/terminal access
 _ide_helper.php
 _ide_helper_models.php
 .phpstorm.meta.php
