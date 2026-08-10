@@ -56,16 +56,22 @@ try {
 
     echo "=== REBUILDING ALL TABLES VIA MIGRATIONS ===\n";
 
-    // Disable FK checks globally so migration order doesn't cause constraint failures
+    // Open a direct PDO connection to drop tables & disable FK checks
     $dsn = "mysql:host=localhost;dbname={$config['database']};charset=utf8";
     $pdo = new PDO($dsn, $config['username'], $config['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-    $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
-    echo "✅ Foreign key checks disabled globally.\n";
 
+    // Step 1: Drop ALL existing tables cleanly via PDO (bypasses Laravel's db:wipe FK issues)
+    $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
+    $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+    foreach ($tables as $table) {
+        $pdo->exec("DROP TABLE IF EXISTS `$table`");
+    }
+    echo "✅ Dropped " . count($tables) . " existing tables.\n";
+
+    // Step 2: Run migrate:fresh --seed (all tables gone, no conflicts)
     $status = $kernel->call('migrate:fresh', ['--seed' => true, '--force' => true]);
     echo $kernel->output();
 
-    // Re-enable FK checks
     $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
     echo "✅ Foreign key checks re-enabled.\n\n";
 
