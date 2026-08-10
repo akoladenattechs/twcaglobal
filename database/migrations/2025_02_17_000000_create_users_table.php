@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('username', 50)->unique();
@@ -22,7 +23,8 @@ return new class extends Migration
             $table->timestamp('created_at');
             $table->timestamp('updated_at');
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

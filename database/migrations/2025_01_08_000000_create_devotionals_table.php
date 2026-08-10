@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('devotionals', function (Blueprint $table) {
             $table->id();
             $table->string('title', 200);
@@ -25,7 +26,8 @@ return new class extends Migration
             $table->integer('views_count')->default(0);
             $table->timestamps();
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

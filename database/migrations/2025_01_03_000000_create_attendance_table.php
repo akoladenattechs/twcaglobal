@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('attendance', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('member_id')->nullable();
@@ -20,7 +21,8 @@ return new class extends Migration
             $table->text('notes');
             $table->timestamp('created_at');
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

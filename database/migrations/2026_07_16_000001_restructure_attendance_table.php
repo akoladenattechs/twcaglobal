@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         // Handle both scenarios:
         // 1. Fresh install — old columns exist, new columns don't
         // 2. Existing DB — partial state from previous failed migration
@@ -48,7 +49,8 @@ return new class extends Migration
                 $table->integer('total')->storedAs('males + females')->after('first_timers');
             });
         }
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

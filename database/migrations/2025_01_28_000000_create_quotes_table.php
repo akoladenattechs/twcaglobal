@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('quotes', function (Blueprint $table) {
             $table->id();
             $table->text('content');
@@ -19,7 +20,8 @@ return new class extends Migration
             $table->unsignedInteger('image_id')->nullable();
             $table->foreign('image_id')->references('id')->on('media')->nullOnDelete();
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

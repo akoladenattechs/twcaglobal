@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('sermon_media', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('sermon_id');
@@ -16,7 +17,8 @@ return new class extends Migration
             $table->foreign('media_id')->references('id')->on('media')->nullOnDelete();
             $table->timestamp('created_at');
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

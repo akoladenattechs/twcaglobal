@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('homepage_sections', function (Blueprint $table) {
             $table->id();
             $table->string('section_key', 50)->unique();
@@ -21,7 +22,8 @@ return new class extends Migration
             $table->enum('status', ['draft', 'published']);
             $table->timestamp('created_at');
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

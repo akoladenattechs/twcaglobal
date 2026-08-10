@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('two_factor_codes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
@@ -23,7 +24,8 @@ return new class extends Migration
 
             $table->index(['user_id', 'expires_at']);
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

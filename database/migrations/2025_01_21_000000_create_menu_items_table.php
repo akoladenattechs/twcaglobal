@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('menu_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('menu_id');
@@ -23,7 +24,8 @@ return new class extends Migration
             $table->timestamp('updated_at');
             $table->boolean('is_cta');
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

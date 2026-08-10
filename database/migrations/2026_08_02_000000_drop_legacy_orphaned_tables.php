@@ -14,6 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         // Child first (FK to member_groups)
         Schema::dropIfExists('member_group_assignments');
         Schema::dropIfExists('member_groups');

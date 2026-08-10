@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('sermon_series', function (Blueprint $table) {
             $table->id();
             $table->string('title', 100);
@@ -17,7 +18,8 @@ return new class extends Migration
             $table->enum('status', ['draft', 'published']);
             $table->timestamp('created_at');
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

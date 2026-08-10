@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('message_replies', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('message_id');
@@ -17,7 +18,8 @@ return new class extends Migration
             $table->unsignedInteger('sent_by');
             $table->timestamp('sent_at');
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

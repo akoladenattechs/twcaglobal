@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('event_registrations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
@@ -33,7 +34,8 @@ return new class extends Migration
 
             $table->timestamps();
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {

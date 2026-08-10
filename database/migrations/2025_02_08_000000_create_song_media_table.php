@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('song_media', function (Blueprint $table) {
             $table->unsignedInteger('song_id');
             $table->foreign('song_id')->references('id')->on('songs')->nullOnDelete();
@@ -16,7 +17,8 @@ return new class extends Migration
             $table->primary(['song_id', 'media_id']);
             $table->timestamp('created_at');
         });
-    }
+        Schema::enableForeignKeyConstraints();
+}
 
     public function down(): void
     {
