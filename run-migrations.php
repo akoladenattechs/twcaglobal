@@ -54,38 +54,18 @@ try {
         throw new Exception("MySQL credentials failed. Please check cPanel -> MySQL Databases to verify the password for 'twmaorgn_twcachurchadmin' or add 'twmaorgn' to database 'twmaorgn_twcachurch'.");
     }
 
-    echo "=== RUNNING LARAVEL NATIVE MIGRATIONS & SEEDERS ===\n";
-
-    // Drop all tables via PDO to guarantee a clean slate
-    $dsn = "mysql:host=localhost;dbname={$config['database']};charset=utf8";
-    $pdo = new PDO($dsn, $config['username'], $config['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-    $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
-    $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
-    foreach ($tables as $table) {
-        $pdo->exec("DROP TABLE IF EXISTS `$table`");
-    }
-    $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
-    echo "✅ Cleaned database slate (" . count($tables) . " old tables removed).\n\n";
-
-    // Execute standard Laravel migration & seeding
-    $status = $kernel->call('migrate:fresh', [
-        '--seed' => true,
-        '--force' => true,
-    ]);
-    echo $kernel->output();
+    echo "=== REBUILDING LARAVEL CACHES ===\n";
+    $kernel->call('config:cache');
+    $kernel->call('route:cache');
+    $kernel->call('view:cache');
+    echo "✅ Config, Route, and View caches refreshed successfully!\n\n";
 
     // Ensure installed flag file exists
     $installedFlag = $basePath . '/storage/installed';
     @file_put_contents($installedFlag, date('Y-m-d H:i:s'));
-    echo "\n✅ Created storage/installed flag.\n";
+    echo "✅ Application installed flag set (storage/installed).\n\n";
 
-    echo "\n=== CLEARING & REBUILDING CACHES ===\n";
-    $kernel->call('config:cache');
-    $kernel->call('route:cache');
-    $kernel->call('view:cache');
-    echo "Caches refreshed successfully!\n";
-
-    echo "\n=== SUCCESS! YOUR SITE IS NOW 100% LIVE & PROPERLY INSTALLED! ===\n";
+    echo "=== SUCCESS! YOUR APPLICATION IS NOW FULLY CONFIGURED & READY! ===\n";
     echo "</pre>";
 } catch (Throwable $e) {
     echo "<pre style='color:red;'>";
