@@ -70,10 +70,11 @@ try {
     echo "✅ Seeders completed!\n\n";
 
     echo "=== REBUILDING LARAVEL CACHES ===\n";
+    $kernel->call('cache:clear');
     $kernel->call('config:clear');
     $kernel->call('route:cache');
     $kernel->call('view:clear');
-    echo "✅ Config cleared and Route cache refreshed!\n\n";
+    echo "✅ Application cache, Config cleared, and Route cache refreshed!\n\n";
 
     // Ensure installed flag file exists
     $installedFlag = $basePath . '/storage/installed';
