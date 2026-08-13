@@ -13,6 +13,11 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
+    # Route /admin and /admin/* through Laravel front controller
+    # (since public/admin directory exists for uploads/assets, bypass !-d for admin)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^admin(/.*)?$ index.php [L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
@@ -22,4 +27,22 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
+
+# ── PHP upload limits ────────────────────────────────────────────────────────
+# Increase limits to prevent 502 timeout errors when uploading large images/files
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 15M
+    php_value memory_limit 256M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+</IfModule>
+
+# cPanel / LiteSpeed uses php_flag / php_value differently; also try this form:
+<IfModule LiteSpeed>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 15M
+    php_value memory_limit 256M
+    php_value max_execution_time 300
 </IfModule>

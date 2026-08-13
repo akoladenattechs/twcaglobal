@@ -68,7 +68,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($aboutSections as $section)
+                            @foreach($aboutSections as $section)
                             <tr>
                                 <td>
                                     @php
@@ -117,11 +117,7 @@
                                     </button>
                                 </td>
                             </tr>
-                            @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">No about sections yet. Click "Add Section" to create one.</td>
-                            </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -152,7 +148,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($locations as $location)
+                            @foreach($locations as $location)
                             <tr>
                                 <td>{{ htmlspecialchars($location->name ?? '') }}</td>
                                 <td>{{ htmlspecialchars($location->address ?? '') }}</td>
@@ -181,11 +177,7 @@
                                     </button>
                                 </td>
                             </tr>
-                            @empty
-                            <tr>
-                                <td colspan="7" class="text-center text-muted">No locations yet. Click "Add Location" to create one.</td>
-                            </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -484,11 +476,13 @@ $(document).ready(function() {
     // Init DataTables
     $('#aboutTable').DataTable({
         pageLength: 25,
-        order: [[5, 'asc']]
+        order: [[3, 'asc']],
+        language: { emptyTable: 'No about sections yet. Click "Add Section" to create one.' }
     });
     $('#locationsTable').DataTable({
         pageLength: 25,
-        order: [[5, 'asc']]
+        order: [[4, 'asc']],
+        language: { emptyTable: 'No locations yet. Click "Add Location" to create one.' }
     });
 
     // Init Summernote

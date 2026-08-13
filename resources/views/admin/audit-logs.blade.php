@@ -136,7 +136,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($logs as $log)
+                    @foreach($logs as $log)
                     <tr>
                         <td class="text-nowrap" data-order="{{ \Carbon\Carbon::parse($log->created_at)->format('Y-m-d H:i:s') }}">{{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y H:i:s') }}</td>
                         <td class="audit-user-cell">
@@ -154,11 +154,7 @@
                         <td class="text-nowrap">{{ $log->ip_address ? htmlspecialchars($log->ip_address) : '—' }}</td>
                         <td class="audit-ua" title="{{ htmlspecialchars($log->user_agent ?? '') }}">{{ $log->user_agent ? \Illuminate\Support\Str::limit(htmlspecialchars($log->user_agent), 60) : '—' }}</td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">No activity records found.</td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -210,7 +206,10 @@ $(document).ready(function() {
     $('#auditLogsTable').DataTable({
         "pageLength": 25,
         "order": [[ 0, "desc" ]],
-        "paging": false
+        "paging": false,
+        "language": {
+            "emptyTable": "No activity records found."
+        }
     });
 });
 </script>

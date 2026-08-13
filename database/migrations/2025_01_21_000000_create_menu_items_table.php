@@ -14,7 +14,7 @@ return new class extends Migration
             $table->unsignedInteger('menu_id');
             $table->foreign('menu_id')->references('id')->on('menus')->nullOnDelete();
             $table->unsignedInteger('parent_id')->nullable();
-            $table->foreign('parent_id')->references('id')->on('menus')->nullOnDelete();
+            $table->foreign('parent_id')->references('id')->on('menu_items')->nullOnDelete();
             $table->string('title', 100);
             $table->string('url', 255);
             $table->enum('target', ['_self', '_blank']);

@@ -2,7 +2,7 @@
 
 @section('content')
 
-<section class="hero-wrap hero-wrap-2 js-fullheight" @style(['background-image: url(' . asset('admin/bg_1.jpg') . ')'])>
+<section class="hero-wrap hero-wrap-2 js-fullheight" @if(!empty($headerBgUrl)) style="background-image: url('{{ $headerBgUrl }}');" @endif>
     <div class="overlay"></div>
     <div class="container">
         <div class="row no-gutters slider-text align-items-end js-fullheight">
@@ -82,7 +82,13 @@
                     </div>
                     <div class="row no-gutters mt-5">
                         <div class="col-md-12">
-                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2026882.5688139407!2d1.2613242000000127!3d7.154298600000024!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xae534f5bba75071%3A0xccf97273c1bc8e34!2sBelievers&#39;%20Lodge%20Int&#39;l!5e0!3m2!1sen!2sng!4v1672925481076!5m2!1sen!2sng" width="100%" height="450" class="iframe-borderless" allowfullscreen></iframe>
+                            @if(!empty($siteSettings['google_map_embed']))
+                                {{-- Admin-provided custom iframe/embed code from Google Maps --}}
+                                {!! $siteSettings['google_map_embed'] !!}
+                            @else
+                                {{-- Default map fallback --}}
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2026882.5688139407!2d1.2613242000000127!3d7.154298600000024!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xae534f5bba75071%3A0xccf97273c1bc8e34!2sBelievers&#39;%20Lodge%20Int&#39;l!5e0!3m2!1sen!2sng!4v1672925481076!5m2!1sen!2sng" width="100%" height="450" class="iframe-borderless" allowfullscreen></iframe>
+                            @endif
                         </div>
                     </div>
                 </div>

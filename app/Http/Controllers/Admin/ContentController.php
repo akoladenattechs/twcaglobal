@@ -69,6 +69,75 @@ class ContentController extends Controller
     }
 
     /**
+     * Compress/resize an image file using PHP GD before uploading.
+     * Reduces large flyers/banners (e.g. 5MB) to a web-friendly size (~300KB)
+     * to prevent 502 gateway timeouts on shared cPanel hosting.
+     *
+     * Returns the path to a temp compressed file, or the original path if GD
+     * is unavailable or compression is not needed.
+     */
+    private function compressImageForUpload(UploadedFile $file, int $maxWidth = 1200, int $quality = 85): string
+    {
+        // Only compress images larger than 1MB
+        if ($file->getSize() <= 1024 * 1024) {
+            return $file->getRealPath();
+        }
+
+        if (! extension_loaded('gd')) {
+            return $file->getRealPath();
+        }
+
+        try {
+            $mime = $file->getMimeType();
+            $srcPath = $file->getRealPath();
+
+            // Create image resource from source
+            $src = match (true) {
+                str_contains($mime, 'png')  => @imagecreatefrompng($srcPath),
+                str_contains($mime, 'gif')  => @imagecreatefromgif($srcPath),
+                str_contains($mime, 'webp') => @imagecreatefromwebp($srcPath),
+                default                     => @imagecreatefromjpeg($srcPath),
+            };
+
+            if (! $src) {
+                return $srcPath;
+            }
+
+            $origW = imagesx($src);
+            $origH = imagesy($src);
+
+            // Only downscale, never upscale
+            if ($origW <= $maxWidth) {
+                imagedestroy($src);
+                return $srcPath;
+            }
+
+            $ratio  = $maxWidth / $origW;
+            $newW   = $maxWidth;
+            $newH   = (int) round($origH * $ratio);
+
+            $dst = imagecreatetruecolor($newW, $newH);
+
+            // Preserve transparency for PNG/GIF
+            if (str_contains($mime, 'png') || str_contains($mime, 'gif')) {
+                imagealphablending($dst, false);
+                imagesavealpha($dst, true);
+            }
+
+            imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+            imagedestroy($src);
+
+            $tmpPath = tempnam(sys_get_temp_dir(), 'img_compress_') . '.jpg';
+            imagejpeg($dst, $tmpPath, $quality);
+            imagedestroy($dst);
+
+            return $tmpPath;
+        } catch (\Throwable $e) {
+            return $file->getRealPath();
+        }
+    }
+
+    /**
      * AJAX endpoint used by the two-step admin upload flow (sermons/songs).
      * Uploads a single file to R2, creates a Media row, and returns the media id
      * (plus the ID3 track order for audio) as JSON. The browser then submits the
@@ -84,6 +153,8 @@ class ContentController extends Controller
         $file = $request->file('file');
         $category = $request->input('category', 'sermon-audio');
         $subfolder = Str::slug($request->input('subfolder', ''));
+
+        $isImageCategory = in_array($category, ['hero-cover', 'book-cover', 'sermon-cover', 'song-cover', 'event-cover'], true);
 
         if ($category === 'hero-cover') {
             $allowed = ['jpeg', 'jpg', 'png', 'gif', 'webp'];
@@ -101,6 +172,10 @@ class ContentController extends Controller
             $allowed = ['jpeg', 'jpg', 'png', 'gif', 'webp'];
             $folder = $category === 'sermon-cover' ? 'sermon-covers' : 'songs-covers';
             $title = 'Cover: '.$file->getClientOriginalName();
+        } elseif ($category === 'event-cover') {
+            $allowed = ['jpeg', 'jpg', 'png', 'gif', 'webp'];
+            $folder = 'events';
+            $title = 'Event: '.$file->getClientOriginalName();
         } else {
             $allowed = ['mp3', 'wav', 'ogg', 'aac', 'flac', 'm4a', 'mp4'];
             $base = $category === 'song-audio' ? 'songs' : 'sermons';
@@ -116,11 +191,39 @@ class ContentController extends Controller
             return response()->json(['success' => false, 'error' => 'File exceeds the 100 MB limit.'], 422);
         }
 
+        // Auto-compress large images before uploading to R2 to prevent 502 timeouts on shared hosting
         $file_name_db = uniqid().'_'.preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
-        $r2_url = $this->uploadToR2($folder, $file, $file_name_db);
+        
+        try {
+            if ($isImageCategory) {
+                // Force .jpg extension for compressed output
+                $file_name_db = preg_replace('/\.[^.]+$/', '', $file_name_db).'.jpg';
+                $compressedPath = $this->compressImageForUpload($file);
+                if ($compressedPath !== $file->getRealPath()) {
+                    // Upload the compressed temp file directly via Storage
+                    $tmpStream = fopen($compressedPath, 'rb');
+                    $uploaded = Storage::disk('r2')->put($folder.'/'.$file_name_db, $tmpStream, 'public');
+                    if (is_resource($tmpStream)) {
+                        fclose($tmpStream);
+                    }
+                    @unlink($compressedPath);
+                    $r2_url = $uploaded ? rtrim(config('filesystems.disks.r2.url'), '/').'/'.ltrim($folder.'/'.$file_name_db, '/') : null;
+                } else {
+                    $r2_url = $this->uploadToR2($folder, $file, $file_name_db);
+                }
+            } else {
+                $r2_url = $this->uploadToR2($folder, $file, $file_name_db);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Media Upload Exception: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'success' => false,
+                'error' => 'Upload error: '.$e->getMessage()
+            ], 500);
+        }
 
         if (! $r2_url) {
-            return response()->json(['success' => false, 'error' => 'R2 upload failed. Check your connection and try again.'], 500);
+            return response()->json(['success' => false, 'error' => 'R2 upload failed. Please verify live server R2 credentials or permissions.'], 500);
         }
 
         $media = Media::create([
@@ -627,10 +730,14 @@ class ContentController extends Controller
             $action = $request->input('action');
 
             if ($action === 'add') {
+                $cleanContent = html_entity_decode(html_entity_decode($request->input('quote'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $cleanAuthor = $request->input('author') ? html_entity_decode(html_entity_decode($request->input('author'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8') : null;
+                $cleanTitle = $request->input('position') ? html_entity_decode(html_entity_decode($request->input('position'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8') : null;
+
                 Quote::create([
-                    'content' => $request->input('quote'),
-                    'author' => $request->input('author') ?: null,
-                    'title' => $request->input('position') ?: null,
+                    'content' => $cleanContent,
+                    'author' => $cleanAuthor,
+                    'title' => $cleanTitle,
                     'image_id' => $request->input('image_id') ?: null,
                     'display_order' => (int) $request->input('display_order'),
                     'status' => $request->input('status'),
@@ -638,10 +745,14 @@ class ContentController extends Controller
                 ]);
             } elseif ($action === 'edit' && $request->input('id')) {
                 $quote = Quote::findOrFail($request->input('id'));
+                $cleanContent = html_entity_decode(html_entity_decode($request->input('quote'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $cleanAuthor = $request->input('author') ? html_entity_decode(html_entity_decode($request->input('author'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8') : null;
+                $cleanTitle = $request->input('position') ? html_entity_decode(html_entity_decode($request->input('position'), ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8') : null;
+
                 $quote->update([
-                    'content' => $request->input('quote'),
-                    'author' => $request->input('author') ?: null,
-                    'title' => $request->input('position') ?: null,
+                    'content' => $cleanContent,
+                    'author' => $cleanAuthor,
+                    'title' => $cleanTitle,
                     'image_id' => $request->input('image_id') ?: null,
                     'display_order' => (int) $request->input('display_order'),
                     'status' => $request->input('status'),

@@ -159,7 +159,7 @@ class FrontendController extends Controller
             $upcomingEvents = collect();
         }
         try {
-            $recentQuotes = Quote::where('status', 'published')->orderBy('display_order')->latest()->take(3)->get();
+            $recentQuotes = Quote::where('status', 'published')->orderBy('display_order', 'asc')->get();
         } catch (\Exception $e) {
             $recentQuotes = [];
         }

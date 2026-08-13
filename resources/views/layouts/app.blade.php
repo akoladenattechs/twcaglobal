@@ -5,7 +5,7 @@
         $pageTitle = $siteSettings['site_title'] ?? config('app.name');
         $metaDesc = $siteSettings['meta_description'] ?? ($siteSettings['site_description'] ?? '');
         $metaKeywords = $siteSettings['meta_keywords'] ?? '';
-        $ogImage = !empty($siteSettings['og_image']) ? \App\Helpers\HtmlHelper::assetUrl($siteSettings['og_image']) : (!empty($siteSettings['logo']) ? \App\Helpers\HtmlHelper::assetUrl($siteSettings['logo']) : asset('admin/bg_1.jpg'));
+        $ogImage = !empty($siteSettings['og_image']) ? \App\Helpers\HtmlHelper::assetUrl($siteSettings['og_image']) : (!empty($siteSettings['logo']) ? \App\Helpers\HtmlHelper::assetUrl($siteSettings['logo']) : ($headerBgUrl ?? ''));
         $gaId = $siteSettings['google_analytics_id'] ?? '';
         $googleVerify = $siteSettings['google_site_verification'] ?? '';
         $bingVerify = $siteSettings['bing_site_verification'] ?? '';
@@ -169,7 +169,7 @@
                                 $isActive = request()->is($cleanPath);
                             }
                             
-                            $hasChildren = isset($menuItems[$item->id]);
+                            $hasChildren = isset($menuItems[(string)$item->id]);
                         @endphp
                         @if($hasChildren)
                             <li class="nav-item dropdown {{ $isActive ? 'active' : '' }}">
@@ -177,7 +177,7 @@
                                     {{ htmlspecialchars($item->title) }}
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dropdown{{ $item->id }}">
-                                    @foreach($menuItems[$item->id] as $child)
+                                    @foreach($menuItems[(string)$item->id] as $child)
                                         @php
                                             $childUrl = $child->url;
                                             if (strpos($childUrl, 'http') === 0 || strpos($childUrl, '#') === 0) {

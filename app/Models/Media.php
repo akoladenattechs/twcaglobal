@@ -49,6 +49,6 @@ class Media extends Model
             return $name;
         }
 
-        return '';
+        return asset($name);
     }
 }

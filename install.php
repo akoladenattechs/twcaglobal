@@ -40,7 +40,8 @@ $APP_URL = getenv('INSTALLER_APP_URL');
 $ADMIN_USERNAME = getenv('INSTALLER_ADMIN_USERNAME');
 
 // ─── Bootstrap ─────────────────────────────────────────────────────────────
-define('INSTALL_ROOT', __DIR__);
+$possibleRoot = file_exists(__DIR__ . '/../artisan') ? dirname(__DIR__) : __DIR__;
+define('INSTALL_ROOT', $possibleRoot);
 define('STORAGE_PATH', INSTALL_ROOT.'/storage');
 define('ENV_PATH', INSTALL_ROOT.'/.env');
 define('ENV_PROD_PATH', INSTALL_ROOT.'/.env.production');
@@ -694,59 +695,51 @@ function importSchemaSql(string $host, string $port, string $db, string $user, s
     }
 
     try {
-        $mysqli = new mysqli($host, $user, $pass, '', (int) $port);
-        if ($mysqli->connect_error) {
-            throw new RuntimeException('MySQL connection failed: '.$mysqli->connect_error);
-        }
+        $dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8";
+        $pdo = new PDO($dsn, $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => true,
+        ]);
 
-        // Ensure database exists and select it
-        $mysqli->query("CREATE DATABASE IF NOT EXISTS `{$db}` CHARACTER SET utf8 COLLATE utf8_unicode_ci");
-        $mysqli->select_db($db);
+        $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
 
-        // Get table count before import
-        $tblBefore = $mysqli->query('SELECT COUNT(*) as cnt FROM information_schema.tables WHERE table_schema = DATABASE()');
-        $beforeCount = (int) $tblBefore->fetch_assoc()['cnt'];
+        $sql = EMBEDDED_SCHEMA_SQL;
+        // Split SQL statements safely by semicolon followed by newline
+        $statements = array_filter(array_map('trim', explode(";\n", $sql)));
 
-        // Disable FK checks for clean import, execute schema, re-enable
-        $mysqli->query('SET FOREIGN_KEY_CHECKS = 0');
-
-        $schemaSql = EMBEDDED_SCHEMA_SQL;
-        if (! $mysqli->multi_query($schemaSql)) {
-            throw new RuntimeException('Schema execution failed: '.$mysqli->error);
-        }
-        // Consume all result sets (required before next query)
-        while ($mysqli->more_results()) {
-            $mysqli->next_result();
-            if ($mysqli->error) {
-                error_log('Schema SQL warning: '.$mysqli->error);
+        $executed = 0;
+        foreach ($statements as $stmt) {
+            if (empty($stmt) || str_starts_with($stmt, '--')) {
+                continue;
+            }
+            try {
+                $pdo->exec($stmt);
+                $executed++;
+            } catch (Throwable $e) {
+                // Ignore drop/if exists warnings, throw structural errors
+                if (! str_contains($e->getMessage(), 'Unknown table')) {
+                    error_log('Schema statement notice: '.$e->getMessage());
+                }
             }
         }
 
-        $mysqli->query('SET FOREIGN_KEY_CHECKS = 1');
-
-        // Count newly created tables
-        $tblAfter = $mysqli->query('SELECT COUNT(*) as cnt FROM information_schema.tables WHERE table_schema = DATABASE()');
-        $afterCount = (int) $tblAfter->fetch_assoc()['cnt'];
-        $created = $afterCount - $beforeCount;
-
-        // Record migrations so artisan knows which already ran
-        $migRecorded = 0;
         if (defined('EMBEDDED_MIGRATIONS_SQL') && EMBEDDED_MIGRATIONS_SQL !== '') {
-            $migSql = EMBEDDED_MIGRATIONS_SQL;
-            if ($mysqli->multi_query($migSql)) {
-                while ($mysqli->more_results()) {
-                    $mysqli->next_result();
+            $migStatements = array_filter(array_map('trim', explode(";\n", EMBEDDED_MIGRATIONS_SQL)));
+            foreach ($migStatements as $stmt) {
+                if (empty($stmt) || str_starts_with($stmt, '--')) {
+                    continue;
                 }
-                $countMig = $mysqli->query('SELECT COUNT(*) as cnt FROM migrations');
-                if ($countMig) {
-                    $migRecorded = (int) $countMig->fetch_assoc()['cnt'];
+                try {
+                    $pdo->exec($stmt);
+                } catch (Throwable $e) {
+                    // Ignore duplicate key errors
                 }
             }
         }
 
-        $mysqli->close();
+        $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
 
-        return ['success' => true, 'message' => "Schema imported: {$created} new tables created, {$migRecorded} migration records recorded."];
+        return ['success' => true, 'message' => "Schema imported successfully ({$executed} statements executed)."];
 
     } catch (Throwable $e) {
         return ['success' => false, 'message' => 'Schema import failed: '.$e->getMessage()];

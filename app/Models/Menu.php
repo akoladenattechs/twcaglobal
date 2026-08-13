@@ -33,7 +33,7 @@ class Menu extends Model
 {
     protected $table = 'menus';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = ['name', 'location', 'display_order', 'status'];
 

@@ -56,6 +56,11 @@ try {
         throw new Exception("MySQL credentials failed. Please check cPanel -> MySQL Databases to verify the password for 'twmaorgn_twcachurchadmin' or add 'twmaorgn' to database 'twmaorgn_twcachurch'.");
     }
 
+    echo "=== RUNNING MIGRATIONS ===\n";
+    $kernel->call('migrate', ['--force' => true]);
+    echo $kernel->output();
+    echo "✅ Migrations complete!\n\n";
+
     echo "=== RUNNING SEEDERS (Roles & Superadmin User) ===\n";
     $kernel->call('db:seed', ['--force' => true]);
     echo $kernel->output();

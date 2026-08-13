@@ -329,7 +329,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($transactions as $tx)
+                            @foreach($transactions as $tx)
                             <tr>
                                 <td>{{ \Carbon\Carbon::parse($tx->transaction_date)->format('M d') }}</td>
                                 <td>
@@ -354,9 +354,7 @@
                                     @endif
                                 </td>
                             </tr>
-                            @empty
-                            <tr><td colspan="6" class="text-center text-muted py-4">No transactions yet.</td></tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -525,7 +523,10 @@ $(document).ready(function() {
             "order": [[0, "desc"]],
             "paging": false,
             "info": false,
-            "searching": false
+            "searching": false,
+            "language": {
+                "emptyTable": "No transactions yet."
+            }
         });
     }
 

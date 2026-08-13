@@ -28,7 +28,7 @@
                     @foreach($quotes as $quote)
                     <tr>
                         <td>{{ $quote->id }}</td>
-                        <td>{{ htmlspecialchars(substr($quote->content, 0, 100)) }}{{ strlen($quote->content) > 100 ? '...' : '' }}</td>
+                        <td>{{ Str::limit($quote->content, 100) }}</td>
                         <td>{{ $quote->display_order }}</td>
                         <td>
                             @if($quote->status === 'published')
@@ -38,7 +38,7 @@
                             @endif
                         </td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-primary btn-action-edit mr-1" data-toggle="modal" data-target="#editQuoteModal" data-id="{{ $quote->id }}" data-content="{{ htmlspecialchars($quote->content) }}" data-author="{{ htmlspecialchars($quote->author ?? '') }}" data-title="{{ htmlspecialchars($quote->title ?? '') }}" data-image-id="{{ $quote->image_id ?? 0 }}" data-order="{{ $quote->display_order }}" data-status="{{ $quote->status }}" title="Edit">
+                            <button type="button" class="btn btn-sm btn-primary btn-action-edit mr-1" data-toggle="modal" data-target="#editQuoteModal" data-id="{{ $quote->id }}" data-content="{{ $quote->content }}" data-author="{{ $quote->author ?? '' }}" data-title="{{ $quote->title ?? '' }}" data-image-id="{{ $quote->image_id ?? 0 }}" data-order="{{ $quote->display_order }}" data-status="{{ $quote->status }}" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <button type="button" class="btn btn-sm btn-danger btn-action-delete" title="Delete"
@@ -171,6 +171,18 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    function decodeHtml(html) {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        var val = txt.value;
+        // Decode twice if double-encoded
+        if (val.indexOf('&') !== -1) {
+            txt.innerHTML = val;
+            val = txt.value;
+        }
+        return val;
+    }
+
     // Initialize DataTable
     const quotesTable = $("#quotesTable").DataTable({
         order: [[2, "asc"]], // Sort by display order (column index 2)
@@ -183,9 +195,9 @@ document.addEventListener('DOMContentLoaded', function() {
     editButtons.forEach(button => {
         button.addEventListener("click", function() {
             document.getElementById("edit_id").value = this.getAttribute("data-id");
-            document.getElementById("edit_quote").value = this.getAttribute("data-content");
-            document.getElementById("edit_author").value = this.getAttribute("data-author") || "";
-            document.getElementById("edit_position").value = this.getAttribute("data-title") || "";
+            document.getElementById("edit_quote").value = decodeHtml(this.getAttribute("data-content") || "");
+            document.getElementById("edit_author").value = decodeHtml(this.getAttribute("data-author") || "");
+            document.getElementById("edit_position").value = decodeHtml(this.getAttribute("data-title") || "");
             document.getElementById("edit_image_id").value = this.getAttribute("data-image-id") || "";
             document.getElementById("edit_display_order").value = this.getAttribute("data-order");
             document.getElementById("edit_status").value = this.getAttribute("data-status");

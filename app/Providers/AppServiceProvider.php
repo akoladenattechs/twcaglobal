@@ -103,19 +103,35 @@ class AppServiceProvider extends ServiceProvider
             }
 
             try {
-                // Get main menu with children
-                $mainMenu = Menu::where('location', 'main_menu')
-                    ->where('status', 'active')
-                    ->first();
-                $menuItems = $mainMenu
-                    ? $mainMenu->menuItems()->where('status', 'active')->orderBy('order_number')->get()->groupBy('parent_id')
-                    : [];
+                // Fetch all active menu items for navbar rendering regardless of menu container
+                $menuItems = \App\Models\MenuItem::where('status', 'active')
+                    ->orderBy('order_number')
+                    ->get()
+                    ->groupBy(function ($item) {
+                        return !empty($item->parent_id) ? (string) $item->parent_id : '';
+                    });
             } catch (\Throwable $e) {
-                $menuItems = [];
+                $menuItems = collect();
+            }
+
+            try {
+                // Dynamically fetch the primary background image (order 1 or id 1) from database
+                $headerBgUrl = '';
+                $firstSlider = \App\Models\HomepageSlider::where('status', 'published')
+                    ->orderBy('display_order', 'asc')
+                    ->orderBy('id', 'asc')
+                    ->first();
+
+                if ($firstSlider && $firstSlider->media && !empty($firstSlider->media->url)) {
+                    $headerBgUrl = $firstSlider->media->url;
+                }
+            } catch (\Throwable $e) {
+                $headerBgUrl = '';
             }
 
             $view->with('siteSettings', $siteSettings)
-                ->with('menuItems', $menuItems);
+                ->with('menuItems', $menuItems)
+                ->with('headerBgUrl', $headerBgUrl);
         });
 
         // ─── Blade Permission Directive ─────────────────────────────────────

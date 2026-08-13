@@ -52,9 +52,8 @@
                         <div class="form-group">
                             <label>Menu *</label>
                             <select class="form-control" name="menu_id" id="add_menu_id" required>
-                                <option value="">Select a menu...</option>
                                 @foreach($menus as $menu)
-                                    <option value="{{ $menu->id }}">{{ htmlspecialchars($menu->name) }}</option>
+                                    <option value="{{ $menu->id }}" {{ $loop->first ? 'selected' : '' }}>{{ htmlspecialchars($menu->name) }} {{ $menu->location === 'main_menu' ? '(Main Navigation)' : '' }}</option>
                                 @endforeach
                             </select>
                         </div>

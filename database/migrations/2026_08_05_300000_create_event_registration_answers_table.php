@@ -8,15 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('event_registration_answers', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('registration_id')->constrained('event_registrations')->cascadeOnDelete();
-            $table->foreignId('field_id')->constrained('event_registration_fields')->cascadeOnDelete();
-            $table->text('value')->nullable();
-            $table->timestamps();
+        if (!Schema::hasTable('event_registration_answers')) {
+            Schema::create('event_registration_answers', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('registration_id');
+                $table->foreign('registration_id')->references('id')->on('event_registrations')->cascadeOnDelete();
+                $table->unsignedBigInteger('field_id');
+                $table->foreign('field_id')->references('id')->on('event_registration_fields')->cascadeOnDelete();
+                $table->text('value')->nullable();
+                $table->timestamps();
 
-            $table->unique(['registration_id', 'field_id']);
-        });
+                $table->unique(['registration_id', 'field_id']);
+            });
+        }
     }
 
     public function down(): void

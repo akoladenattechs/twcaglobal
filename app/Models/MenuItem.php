@@ -43,7 +43,7 @@ class MenuItem extends Model
 {
     protected $table = 'menu_items';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = ['menu_id', 'parent_id', 'title', 'url', 'target', 'order_number', 'status', 'is_cta'];
 

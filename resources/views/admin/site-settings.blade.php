@@ -206,6 +206,11 @@
                             <label>Email</label>
                             <input type="email" class="form-control" name="contact[email]" value="{{ $settings['contact']['email'] ?? '' }}">
                         </div>
+                        <div class="form-group">
+                            <label>Google Maps Embed HTML / URL (Optional Override)</label>
+                            <textarea class="form-control" name="contact[google_map_embed]" rows="3" placeholder="Paste custom Google Maps <iframe> code or leave blank to auto-generate map from Address above">{{ $settings['contact']['google_map_embed'] ?? '' }}</textarea>
+                            <small class="form-text text-muted">If left blank, the Google Map on the Contact Us page automatically updates whenever you change the Address above.</small>
+                        </div>
                     </div>
                 </div>
             </div>
