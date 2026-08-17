@@ -1,20 +1,32 @@
 @extends('layouts.app')
 
+@php
+    $primary = $siteSettings['primary_color'] ?? '#ce0f3d';
+    $secondary = $siteSettings['secondary_color'] ?? '#343a40';
+@endphp
+
 @section('title', 'Unsubscribe from Newsletter')
 
 @section('content')
-<section class="page-header" style="background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); padding: 60px 0 40px;">
-    <div class="container text-center text-white">
-        <h1 class="mb-2" style="color: #fff;">Unsubscribe</h1>
-        <p class="mb-0" style="color: rgba(255,255,255,0.85); font-size: 1.1rem;">
-            Manage your newsletter preferences.
-        </p>
+<!-- Hero Section -->
+<section class="hero-wrap hero-wrap-2 js-fullheight" @if(!empty($headerBgUrl)) style="background-image: url('{{ $headerBgUrl }}');" @endif>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end js-fullheight">
+            <div class="col-md-9 ftco-animate pb-5">
+                <h1 class="mb-0 bread" style="color: #fff;">Unsubscribe</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.1rem; margin-top: 10px;">
+                    Manage your newsletter preferences.
+                </p>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="py-5">
+<!-- Content Section -->
+<section class="ftco-section ftco-no-pb ftco-no-pt">
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center py-5">
             <div class="col-md-6 col-lg-5">
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-4 text-center">
@@ -41,7 +53,7 @@
                             </p>
                             <form method="POST" action="{{ route('newsletter.unsubscribe.process', $subscriber->unsubscribe_token) }}">
                                 @csrf
-                                <button type="submit" class="btn btn-danger btn-lg px-5">Confirm Unsubscribe</button>
+                                <button type="submit" class="btn btn-lg px-5" style="background: {{ $primary }}; border-color: {{ $primary }}; color: #fff; font-weight: 600;">Confirm Unsubscribe</button>
                             </form>
                             <p class="text-muted mt-3 small">
                                 Changed your mind? You can simply close this page.

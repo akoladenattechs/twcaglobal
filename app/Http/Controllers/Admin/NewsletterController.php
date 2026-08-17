@@ -221,6 +221,10 @@ class NewsletterController extends Controller
             return redirect()->route('admin.newsletters');
         }
 
+        // Lazy cleanup — purge pending subscribers unconfirmed for 48+ hours
+        // so the admin list stays clean without relying on a cron job.
+        NewsletterSubscriber::purgeStalePending(48);
+
         $subscribers = NewsletterSubscriber::orderBy('created_at', 'desc')->get();
         $newsletters = Newsletter::withCount('trackingEvents')->orderBy('created_at', 'desc')->get();
 

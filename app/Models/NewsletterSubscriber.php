@@ -108,15 +108,17 @@ class NewsletterSubscriber extends Model
 
     /**
      * Generate tokens and mark as pending (double opt-in).
+     *
+     * The subscriber is NOT active until they click the verification link,
+     * which prevents spam bots from flooding the table with fake addresses.
      */
     public static function register(string $email, ?string $name = null): self
     {
         return self::create([
             'email' => $email,
             'name' => $name,
-            'status' => 'active',
+            'status' => 'pending',
             'subscribed_at' => now(),
-            'verified_at' => now(),
             'verification_token' => Str::random(64),
             'unsubscribe_token' => Str::random(64),
         ]);
@@ -251,5 +253,20 @@ class NewsletterSubscriber extends Model
     public static function findByVerificationToken(string $token): ?self
     {
         return self::where('verification_token', $token)->first();
+    }
+
+    /**
+     * Delete pending subscribers who never confirmed within the given hours.
+     *
+     * Called lazily on subscribe requests / admin views so no cron job is
+     * required. Pending rows are harmless (they never receive emails), so
+     * purging them a little late is fine.
+     */
+    public static function purgeStalePending(int $hours = 48): int
+    {
+        return self::query()
+            ->where('status', 'pending')
+            ->where('created_at', '<', now()->subHours($hours))
+            ->delete();
     }
 }

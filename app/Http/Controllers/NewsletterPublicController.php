@@ -20,6 +20,18 @@ use Illuminate\View\View;
  */
 class NewsletterPublicController extends Controller
 {
+    /**
+     * Get all site settings as an array.
+     */
+    private function getSiteSettings(): array
+    {
+        try {
+            return SiteSetting::all()->pluck('setting_value', 'setting_key')->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
     // ───── Subscription (Double Opt-In) ─────
 
     /**
@@ -27,7 +39,8 @@ class NewsletterPublicController extends Controller
      */
     public function subscribeForm(): View
     {
-        return view('frontend.newsletter.subscribe');
+        $siteSettings = $this->getSiteSettings();
+        return view('frontend.newsletter.subscribe', compact('siteSettings'));
     }
 
     /**
@@ -43,31 +56,48 @@ class NewsletterPublicController extends Controller
 
         $email = $request->input('email');
 
+        // Lazy cleanup — purge pending subscribers unconfirmed for 48+ hours
+        // (no cron job required; runs on each subscribe attempt).
+        NewsletterSubscriber::purgeStalePending(48);
+
         // Check if subscriber exists
         $existing = NewsletterSubscriber::where('email', $email)->first();
+
         if ($existing) {
             if ($existing->status === 'active') {
                 return back()->with('info', 'You are already subscribed to our newsletter!');
             }
 
-            // Re-activate if pending, unsubscribed, or bounced
+            if ($existing->status === 'pending') {
+                // Already awaiting confirmation — just resend the link.
+                $this->sendVerificationEmail($existing);
+
+                return back()->with('info', 'Please check your inbox — we have sent you a confirmation link.');
+            }
+
+            // Unsubscribed or bounced — restart the double opt-in flow.
             $existing->update([
-                'status' => 'active',
+                'name' => $request->input('name') ?? $existing->name,
+                'status' => 'pending',
                 'subscribed_at' => now(),
-                'verified_at' => now(),
+                'verified_at' => null,
+                'verification_token' => \Illuminate\Support\Str::random(64),
                 'unsubscribed_at' => null,
                 'bounced_at' => null,
                 'bounce_reason' => null,
                 'complaint_at' => null,
             ]);
 
-            return back()->with('success', 'Welcome back! Your newsletter subscription has been re-activated.');
+            $this->sendVerificationEmail($existing);
+
+            return back()->with('success', 'Welcome back! Please check your inbox to confirm your subscription.');
         }
 
-        // Instant active registration
-        NewsletterSubscriber::register($email, $request->input('name'));
+        // New subscriber — register as pending and send the verification email.
+        $subscriber = NewsletterSubscriber::register($email, $request->input('name'));
+        $this->sendVerificationEmail($subscriber);
 
-        return back()->with('success', 'Thank you for subscribing to our newsletter!');
+        return back()->with('success', 'Thank you for subscribing! Please check your inbox to confirm your email address.');
     }
 
     /**
@@ -75,6 +105,7 @@ class NewsletterPublicController extends Controller
      */
     public function verify(string $token): View|RedirectResponse
     {
+        $siteSettings = $this->getSiteSettings();
         $subscriber = NewsletterSubscriber::findByVerificationToken($token);
 
         if (! $subscriber) {
@@ -82,6 +113,7 @@ class NewsletterPublicController extends Controller
                 'title' => 'Invalid Link',
                 'message' => 'This verification link is invalid or has already been used.',
                 'type' => 'error',
+                'siteSettings' => $siteSettings,
             ]);
         }
 
@@ -90,6 +122,7 @@ class NewsletterPublicController extends Controller
                 'title' => 'Already Verified',
                 'message' => 'Your email is already verified. Thank you!',
                 'type' => 'success',
+                'siteSettings' => $siteSettings,
             ]);
         }
 
@@ -99,6 +132,7 @@ class NewsletterPublicController extends Controller
             'title' => 'Subscription Confirmed!',
             'message' => 'You have successfully subscribed to our newsletter. Thank you!',
             'type' => 'success',
+            'siteSettings' => $siteSettings,
         ]);
     }
 
@@ -113,9 +147,9 @@ class NewsletterPublicController extends Controller
 
             Mail::send('emails.newsletter-verify', [
                 'subscriber' => $subscriber,
-                'verification_url' => $verificationUrl,
-                'primary_color' => $settings['primary_color'] ?? '#ce0f3d',
-                'secondary_color' => $settings['secondary_color'] ?? '#343a40',
+                'verificationUrl' => $verificationUrl,
+                'primaryColor' => $settings['primary_color'] ?? '#ce0f3d',
+                'secondaryColor' => $settings['secondary_color'] ?? '#343a40',
             ], function ($message) use ($subscriber) {
                 $message->to($subscriber->email)
                     ->subject('Please confirm your subscription');
@@ -132,6 +166,7 @@ class NewsletterPublicController extends Controller
      */
     public function unsubscribeForm(string $token): View
     {
+        $siteSettings = $this->getSiteSettings();
         $subscriber = NewsletterSubscriber::findByUnsubscribeToken($token);
 
         if (! $subscriber) {
@@ -139,12 +174,14 @@ class NewsletterPublicController extends Controller
                 'title' => 'Invalid Link',
                 'message' => 'This unsubscribe link is invalid or has expired.',
                 'type' => 'error',
+                'siteSettings' => $siteSettings,
             ]);
         }
 
         return view('frontend.newsletter.unsubscribe', [
             'subscriber' => $subscriber,
             'token' => $token,
+            'siteSettings' => $siteSettings,
         ]);
     }
 
@@ -153,6 +190,7 @@ class NewsletterPublicController extends Controller
      */
     public function unsubscribeProcess(string $token): RedirectResponse|View
     {
+        $siteSettings = $this->getSiteSettings();
         $subscriber = NewsletterSubscriber::findByUnsubscribeToken($token);
 
         if (! $subscriber) {
@@ -160,6 +198,7 @@ class NewsletterPublicController extends Controller
                 'title' => 'Invalid Link',
                 'message' => 'This unsubscribe link is invalid or has expired.',
                 'type' => 'error',
+                'siteSettings' => $siteSettings,
             ]);
         }
 
@@ -168,6 +207,7 @@ class NewsletterPublicController extends Controller
                 'title' => 'Already Unsubscribed',
                 'message' => 'You are already unsubscribed from our newsletter.',
                 'type' => 'info',
+                'siteSettings' => $siteSettings,
             ]);
         }
 
@@ -177,6 +217,7 @@ class NewsletterPublicController extends Controller
             'title' => 'Unsubscribed',
             'message' => 'You have been successfully unsubscribed. You will no longer receive our emails.',
             'type' => 'success',
+            'siteSettings' => $siteSettings,
         ]);
     }
 

@@ -374,39 +374,6 @@ $(document).ready(function() {
     </div>
 </section>
 
-<!-- Newsletter Subscribe Banner -->
-<section class="newsletter-subscribe-section">
-    <div class="container">
-        <div class="newsletter-banner-grid">
-            <!-- Left Panel: Heading -->
-            <div class="newsletter-banner-left">
-                <h3 class="newsletter-title">Newsletter &mdash; Get Updates &amp; Latest News</h3>
-                <p class="newsletter-subtitle">Stay informed with devotionals, sermons &amp; church updates.</p>
-            </div>
-
-            <!-- Center Panel: Diamond + Envelope -->
-            <div class="newsletter-banner-center">
-                <div class="newsletter-icon-box">
-                    <div class="newsletter-icon-bg"></div>
-                    <i class="fa fa-envelope newsletter-icon"></i>
-                </div>
-            </div>
-
-            <!-- Right Panel: Subscribe Form -->
-            <div class="newsletter-banner-right">
-                <form method="POST" action="{{ route('newsletter.subscribe.store') }}" class="newsletter-form-row">
-                    @csrf
-                    <input type="text" name="name" class="newsletter-input" placeholder="Your Name" required>
-                    <input type="email" name="email" class="newsletter-input" placeholder="Email Address" required>
-                    <button type="submit" class="newsletter-btn" aria-label="Subscribe">
-                        <i class="fa fa-paper-plane"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
-
 <footer class="ftco-footer ftco-section bg-light text-dark ftco-footer-custom">
     <div class="container">
         <div class="row mb-5">
@@ -559,6 +526,58 @@ $(document).ready(function() {
 @stack('scripts')
 
 @stack('modals')
+
+@if(Route::is('home'))
+<!-- Newsletter Subscribe Modal (shows once per visitor on the home page) -->
+<div class="modal fade newsletter-modal" id="newsletterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content newsletter-modal-content border-0">
+            <button type="button" class="close newsletter-modal-close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="newsletter-modal-header">
+                <h3 class="newsletter-modal-title">Newsletter &mdash; Get Updates &amp; Latest News</h3>
+                <p class="newsletter-modal-subtitle">Stay informed with devotionals, sermons &amp; church updates.</p>
+            </div>
+            <div class="newsletter-modal-body">
+                <form method="POST" action="{{ route('newsletter.subscribe.store') }}" class="newsletter-modal-form">
+                    @csrf
+                    <input type="text" name="name" class="newsletter-input" placeholder="Your Name">
+                    <input type="email" name="email" class="newsletter-input" placeholder="Email Address" required>
+                    <button type="submit" class="newsletter-btn newsletter-modal-btn">
+                        <i class="fa fa-paper-plane"></i> Subscribe
+                    </button>
+                </form>
+                <p class="newsletter-modal-note">We respect your privacy. You can unsubscribe at any time.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    (function () {
+        var KEY = 'newsletter_modal_shown_session';
+        try {
+            if (sessionStorage.getItem(KEY)) {
+                return; // First-home-page landing in this browser session already handled.
+            }
+
+            var modalEl = document.getElementById('newsletterModal');
+            if (!modalEl) {
+                return;
+            }
+
+            // Mark immediately so a refresh or re-visit to the same home page in
+            // the current session does not show it again.
+            sessionStorage.setItem(KEY, '1');
+
+            var modal = new bootstrap.Modal(modalEl);
+            setTimeout(function () { modal.show(); }, 1200);
+        } catch (e) {
+            // sessionStorage unavailable (private mode, etc.) — fail silently.
+        }
+    })();
+</script>
+@endif
 
 </body>
 </html>

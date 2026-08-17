@@ -35,7 +35,7 @@ class SecurityHeaders
         $r2Host = $r2Url !== '' ? parse_url($r2Url, PHP_URL_HOST) : '';
         $mediaSources = "'self'";
         if ($r2Host) {
-            $mediaSources .= ' https://'.$r2Host.' https://*.r2.dev';
+            $mediaSources .= ' https://'.$r2Host;
         }
 
         $csp = [

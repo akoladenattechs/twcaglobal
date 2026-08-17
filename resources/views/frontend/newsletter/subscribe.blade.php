@@ -1,20 +1,32 @@
 @extends('layouts.app')
 
+@php
+    $primary = $siteSettings['primary_color'] ?? '#ce0f3d';
+    $secondary = $siteSettings['secondary_color'] ?? '#343a40';
+@endphp
+
 @section('title', 'Subscribe to Newsletter')
 
 @section('content')
-<section class="page-header" style="background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); padding: 60px 0 40px;">
-    <div class="container text-center text-white">
-        <h1 class="mb-2" style="color: #fff;">Subscribe to Our Newsletter</h1>
-        <p class="mb-0" style="color: rgba(255,255,255,0.85); font-size: 1.1rem;">
-            Stay informed with the latest news, devotionals, and updates.
-        </p>
+<!-- Hero Section -->
+<section class="hero-wrap hero-wrap-2 js-fullheight" @if(!empty($headerBgUrl)) style="background-image: url('{{ $headerBgUrl }}');" @endif>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end js-fullheight">
+            <div class="col-md-9 ftco-animate pb-5">
+                <h1 class="mb-0 bread" style="color: #fff;">Subscribe to Our Newsletter</h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: 1.1rem; margin-top: 10px;">
+                    Stay informed with the latest news, devotionals, and updates.
+                </p>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="py-5">
+<!-- Content Section -->
+<section class="ftco-section ftco-no-pb ftco-no-pt">
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center py-5">
             <div class="col-md-6 col-lg-5">
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-4">
@@ -47,7 +59,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="submit" class="btn btn-danger btn-lg w-100">Subscribe</button>
+                            <button type="submit" class="btn btn-lg w-100" style="background: {{ $primary }}; border-color: {{ $primary }}; color: #fff; font-weight: 600;">Subscribe</button>
                         </form>
 
                         <p class="text-muted mt-3 mb-0 small">
